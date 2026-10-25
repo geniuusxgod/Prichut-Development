@@ -1,0 +1,4 @@
+{
+    "name": "Prichut.Hud",
+    "references": ["UnityEngine.UI"]
+}
