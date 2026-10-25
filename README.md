@@ -1,130 +1,108 @@
-# \# Resort Empire
+# Resort Empire
 
-# 
+Resort Empire je hra vytvorená v Unity, v ktorej hráč spravuje ostrovný rezort. Projekt je zameraný na rozvoj rezortu a postupné odomykanie nových budov.
 
-# Resort Empire je hra vytvorená v Unity, v ktorej hráč spravuje ostrovný rezort. Projekt obsahuje hlavnú scénu ostrova s budovami Reception, Restaurant a Beach Bar.
+## 1. Požiadavky
 
-# 
+Na spustenie projektu sú potrebné:
 
-# \## 1. Požiadavky
+- Unity Hub
+- Unity Editor 6000.6.6f1
+- Git
+- Windows 10/11 alebo iný operačný systém podporovaný použitou verziou Unity
+- Pripojenie na internet pri prvom stiahnutí projektu a potrebných balíkov
 
-# 
+## 2. Stiahnutie projektu
 
-# Na spustenie projektu sú potrebné:
+Projekt je dostupný na GitHub:
 
-# 
+https://github.com/geniuusxgod/Prichut-Development
 
-# \- Unity Hub
+Otvorte PowerShell alebo terminál a zadajte:
 
-# \- Unity Editor 6000.6.6f1
+```bash
+git clone https://github.com/geniuusxgod/Prichut-Development.git
+cd Prichut-Development
+```
 
-# \- Git
+Prepnite sa na vetvu obsahujúcu Unity projekt:
 
-# \- Windows 10/11 alebo iný operačný systém podporovaný použitou verziou Unity
+```bash
+git fetch origin
+git switch feature/PRIH-87-project-setup
+```
 
-# 
+Táto vetva obsahuje základnú štruktúru Unity projektu. Po zlúčení zmien do vetvy `develop` bude možné používať aktuálnu spoločnú vývojovú verziu.
 
-# \## 2. Stiahnutie projektu
+## 3. Otvorenie projektu v Unity Hub
 
-# 
+1. Spustite Unity Hub.
+2. Prejdite do sekcie **Projects**.
+3. Kliknite na **Add → Add project from disk**.
+4. Vyberte priečinok `Prichut-Development`.
+5. Skontrolujte, či priečinok obsahuje `Assets`, `Packages` a `ProjectSettings`.
+6. Vyberte Unity Editor verzie **6000.6.6f1**.
+7. Otvorte projekt a počkajte na dokončenie importu súborov.
 
-# Otvorte PowerShell alebo terminál a spustite:
+Pri prvom spustení môže import projektu trvať niekoľko minút.
 
-# 
+## 4. Spustenie hlavnej scény
 
-# ```bash
+1. V Unity Editore otvorte panel **Project**.
+2. Prejdite do priečinka `Assets/Scenes`.
+3. Otvorte scénu `Main.unity`.
+4. Kliknite na tlačidlo **Play** v hornej časti Unity Editora.
+5. Skontrolujte zobrazenie ostrova a dostupných budov.
+6. Otvorte **Window → General → Console** a skontrolujte prípadné chyby.
 
-# git clone https://github.com/geniuusxgod/Prichut-Development.git
+Cesta k hlavnej scéne:
 
-# cd Prichut-Development
+`Assets/Scenes/Main.unity`
 
-# ```
+## 5. Testovanie pomocou Unity Device Simulator
 
-# 
+Na simuláciu mobilného zariadenia použijeme Unity Device Simulator.
 
-# Prepnite sa na vetvu, ktorá obsahuje Unity projekt:
+Postup:
 
-# 
+1. Otvorte Unity projekt.
+2. Prejdite do **Window → Package Manager**.
+3. Overte dostupnosť balíka **Device Simulator** a v prípade potreby ho nainštalujte.
+4. Otvorte režim **Simulator** v okne Game.
+5. Vyberte profil mobilného zariadenia.
+6. Nastavte orientáciu obrazovky na **Landscape**.
+7. Spustite hlavnú scénu tlačidlom **Play**.
+8. Skontrolujte správne zobrazenie ostrova a troch budov.
+9. Skontrolujte Unity Console.
 
-# ```bash
+Device Simulator umožňuje overiť zobrazenie hry na simulovaných mobilných zariadeniach. Nenahrádza testovanie výkonu a kompatibility na fyzickom telefóne.
 
-# git fetch origin
+## 6. Práca s Git a Git Flow
 
-# git switch feature/PRIH-87-project-setup
+Pri vývoji projektu používame Git Flow.
 
-# ```
+Hlavné vetvy:
 
-# 
+- `main` – stabilná verzia projektu
+- `develop` – spoločná vývojová vetva
+- `feature/` – samostatné vetvy pre jednotlivé úlohy
 
-# \## 3. Otvorenie projektu v Unity Hub
+Každá nová funkcionalita alebo zmena sa pripravuje v samostatnej vetve. Po dokončení sa vytvorí Pull Request do vetvy `develop`.
 
-# 
+Príklad vytvorenia novej vetvy:
 
-# 1\. Spustite Unity Hub.
+```bash
+git switch develop
+git pull origin develop
+git switch -c feature/PRIH-XXX-nazov-ulohy
+```
 
-# 2\. Otvorte sekciu Projects.
+## 7. Riešenie problémov
 
-# 3\. Kliknite na Add → Add project from disk.
+**Projekt sa nedá otvoriť:**
 
-# 4\. Vyberte priečinok `Prichut-Development`, ktorý obsahuje priečinky `Assets`, `Packages` a `ProjectSettings`.
+- Skontrolujte správnu verziu Unity.
+- Overte, či ste vybrali koreňový priečinok projektu.
+- Skontrolujte prítomnosť priečinkov `Assets`, `Packages` a `ProjectSettings`.
 
-# 5\. Použite Unity Editor 6000.6.6f1.
-
-# 6\. Počkajte na dokončenie importu súborov.
-
-# 
-
-# \## 4. Spustenie hlavnej scény
-
-# 
-
-# 1\. V Unity Editore otvorte panel Project.
-
-# 2\. Prejdite do priečinka `Assets/Scenes`.
-
-# 3\. Dvojklikom otvorte scénu `Main.unity`.
-
-# 4\. Kliknite na tlačidlo Play.
-
-# 5\. Skontrolujte zobrazenie ostrova a dostupných budov.
-
-# 6\. Otvorte `Window → General → Console` a skontrolujte prípadné chyby.
-
-# 
-
-# \## 5. Unity Device Simulator
-
-# 
-
-# Na simuláciu mobilného zariadenia:
-
-# 
-
-# 1\. Otvorte Unity Package Manager a overte dostupnosť balíka Device Simulator.
-
-# 2\. Otvorte režim Simulator v okne Game.
-
-# 3\. Vyberte profil mobilného zariadenia.
-
-# 4\. Nastavte orientáciu Landscape.
-
-# 5\. Spustite scénu tlačidlom Play.
-
-# 6\. Skontrolujte správne zobrazenie scény a Unity Console.
-
-# 
-
-# Device Simulator slúži na simuláciu zobrazenia a nie je náhradou za testovanie výkonu na fyzickom zariadení.
-
-# 
-
-# \## 6. Poznámky
-
-# 
-
-# Projekt sa vyvíja pomocou Git Flow. Nové zmeny sa pripravujú v samostatných vetvách `feature/` a následne sa integrujú cez Pull Request do vetvy `develop`.
-
-# 
-
-# Pred spustením projektu je potrebné overiť, že zvolená vetva obsahuje aktuálnu hlavnú scénu a potrebné herné súbory.
-
+**
