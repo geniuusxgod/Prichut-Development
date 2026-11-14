@@ -12,6 +12,9 @@ namespace Prichut.Resort
         public float utilizationStaffed = 1f;
         public float utilizationEmpty = 0.33f;
 
+        // Prichod (PRIH-110): wave_timer zatvara prichod, nie vlnu.
+        public float waveTimer = 90f;
+
         // Tabulka vln (Build §4.8). Po poslednej vlne sa opakuje posledna.
         public WaveDefinition[] waves =
         {
