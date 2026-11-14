@@ -9,6 +9,7 @@ namespace Prichut.Resort
         public BuildingId id;
         public bool owned;
         public int level = 1;
+        public bool staffed;
 
         public BuildingState()
         {
@@ -57,6 +58,7 @@ namespace Prichut.Resort
             };
             foreach (BuildingId id in ResortCatalog.AllBuildings)
                 progress.buildings.Add(new BuildingState(id, ResortCatalog.IsStarter(id)));
+            WorkerRoster.AssignInitial(progress, config.initiallyEmpty);
             return progress;
         }
     }

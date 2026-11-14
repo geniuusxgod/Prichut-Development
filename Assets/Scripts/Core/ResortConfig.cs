@@ -17,6 +17,9 @@ namespace Prichut.Resort
         public int startEnergy = 6;
         public int startResortValue = 100;
 
+        // Na starte su 3 budovy a 2 Workeri, tato budova zacina neobsadena.
+        public BuildingId initiallyEmpty = BuildingId.Restaurant;
+
         // WAVE_INCOMING: lod/shuttle, hostia vystupuju (transient, ~2-4 s).
         public float incomingSeconds = 2.5f;
 
