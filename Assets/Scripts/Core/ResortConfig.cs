@@ -12,6 +12,14 @@ namespace Prichut.Resort
         public float utilizationStaffed = 1f;
         public float utilizationEmpty = 0.33f;
 
+        // Startovaci stav hraca.
+        public int startCoins = 0;
+        public int startEnergy = 6;
+        public int startResortValue = 100;
+
+        // WAVE_INCOMING: lod/shuttle, hostia vystupuju (transient, ~2-4 s).
+        public float incomingSeconds = 2.5f;
+
         // Prichod (PRIH-110): wave_timer zatvara prichod, nie vlnu.
         public float waveTimer = 90f;
 
