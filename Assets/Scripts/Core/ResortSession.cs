@@ -92,7 +92,25 @@ namespace Prichut.Resort
                 int served = ServiceSystem.Tick(run, wave.time, dt, SpeedOf(run), capacity);
                 if (served > 0) Raise(new ResortEvent(ResortEventType.UnitsServed, run.need, run.Building, served));
             }
+
+            // wave_timer zatvara PRICHOD, nie vlnu. Potom budovy dobiehaju rady (dobeh).
+            if (!wave.arrivalClosed && wave.time >= Config.waveTimer) CloseArrival();
         }
+
+        private void CloseArrival()
+        {
+            WaveRun wave = State.wave;
+            wave.arrivalClosed = true;
+            foreach (NeedRun run in wave.needs)
+            {
+                int flushed = ArrivalSystem.Flush(run);
+                int capacity = CapacityOf(run.Building);
+                for (int i = 0; i < flushed; i++) ServiceSystem.Arrive(run, wave.time, capacity);
+            }
+            Raise(new ResortEvent(ResortEventType.ArrivalClosed, value: wave.waveNumber));
+        }
+
+        public bool AllGuestsArrived => State.wave != null && State.wave.arrivalClosed;
 
         public int CapacityOf(BuildingId building)
         {
