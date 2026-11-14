@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Prichut.Resort
 {
@@ -11,6 +12,11 @@ namespace Prichut.Resort
         public int baseTotal;
         public int regularArrived;
         public int filled;
+
+        // FIFO rad cakajucich (cas prichodu kazdej jednotky) a oddelene miesta v obsluhe (progres 0..1).
+        // Jednotka z radu nikdy neodide kvoli dlhemu cakaniu.
+        public List<float> queue = new List<float>();
+        public List<float> seats = new List<float>();
 
         public NeedRun()
         {
@@ -26,5 +32,7 @@ namespace Prichut.Resort
         public int DemandTotal => baseTotal;
         public int DemandArrived => regularArrived;
         public int Backlog => DemandArrived - filled;
+        public int Waiting => queue.Count;
+        public int Seated => seats.Count;
     }
 }
