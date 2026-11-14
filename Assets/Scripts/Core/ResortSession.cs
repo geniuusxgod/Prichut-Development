@@ -95,6 +95,26 @@ namespace Prichut.Resort
 
             // wave_timer zatvara PRICHOD, nie vlnu. Potom budovy dobiehaju rady (dobeh).
             if (!wave.arrivalClosed && wave.time >= Config.waveTimer) CloseArrival();
+            if (IsWaveFinished(wave)) ResolveWave();
+        }
+
+        // Koniec vyzaduje uzavrety prichod a backlog = 0 pri vsetkych aktivnych needoch.
+        // Prazdny rad s obsadenym miestom este vlnu neukonci.
+        public static bool IsWaveFinished(WaveRun wave)
+        {
+            if (wave == null || !wave.arrivalClosed) return false;
+            foreach (NeedRun run in wave.needs)
+                if (run.Backlog > 0 || run.Waiting > 0 || run.Seated > 0) return false;
+            return true;
+        }
+
+        // WAVE_RESOLVING sa vyvola prave raz, dalsi Step uz v stave WaveActive nebezi.
+        private void ResolveWave()
+        {
+            if (Phase != WavePhase.WaveActive) return;
+            SetPhase(WavePhase.WaveResolving);
+            Raise(new ResortEvent(ResortEventType.WaveResolved, value: State.wave.waveNumber));
+            SetPhase(WavePhase.WaveComplete);
         }
 
         private void CloseArrival()
