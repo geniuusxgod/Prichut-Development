@@ -11,6 +11,7 @@ namespace Prichut.Resort
         public NeedId need;
         public int baseTotal;
         public int regularArrived;
+        public float arrivalAccumulator;
         public int filled;
 
         // FIFO rad cakajucich (cas prichodu kazdej jednotky) a oddelene miesta v obsluhe (progres 0..1).
