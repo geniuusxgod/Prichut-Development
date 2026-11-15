@@ -132,6 +132,20 @@ namespace Prichut.Resort
 
         public bool AllGuestsArrived => State.wave != null && State.wave.arrivalClosed;
 
+        public bool CanMoveWorker => WavePhaseRules.CanMoveWorker(Phase);
+
+        // Presun Workera zo zdrojovej budovy na jedinu prazdnu. Rozbehnute obsluhy sa neresetuju -
+        // rychlost oboch budov sa zmeni od dalsieho kroku (cielova zrychli, zdrojova spomali).
+        public bool MoveWorkerFrom(BuildingId source)
+        {
+            if (!CanMoveWorker) return false;
+            if (!WorkerRoster.TryMoveFrom(State, source, out BuildingId target)) return false;
+            Raise(new ResortEvent(ResortEventType.WorkerMoved, ResortCatalog.NeedOf(target), target,
+                (int)source));
+            Changed?.Invoke();
+            return true;
+        }
+
         public int CapacityOf(BuildingId building)
         {
             BuildingState state = State.Building(building);
