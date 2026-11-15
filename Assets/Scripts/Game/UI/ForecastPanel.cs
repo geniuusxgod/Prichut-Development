@@ -53,7 +53,7 @@ namespace Prichut.Resort.Game
             Image row = UiKit.Panel(rows, "Row_" + need.need, "ui_panel", 3f);
             row.rectTransform.sizeDelta = new Vector2(286f, 50f);
             var button = row.gameObject.AddComponent<Button>();
-            button.onClick.AddListener(() => Game.Select(building));
+            button.onClick.AddListener(() => Game.RequestWorkerAllocation(building));
 
             Image icon = UiKit.Icon(row.transform, NeedVisuals.Icon(need.need), 40f);
             UiKit.Place(icon.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(8f, 0f), new Vector2(40f, 40f));
