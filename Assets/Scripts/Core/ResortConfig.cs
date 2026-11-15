@@ -26,6 +26,10 @@ namespace Prichut.Resort
         // Prichod (PRIH-110): wave_timer zatvara prichod, nie vlnu.
         public float waveTimer = 90f;
 
+        // Bottleneck (PRIH-121): warning sleduje len rad cakajucich, nie hosti na miestach.
+        public int bottleneckThreshold = 4;
+        public float bottleneckHysteresis = 3f;
+
         // Tabulka vln (Build §4.8). Po poslednej vlne sa opakuje posledna.
         public WaveDefinition[] waves =
         {
