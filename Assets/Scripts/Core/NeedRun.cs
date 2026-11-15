@@ -28,6 +28,11 @@ namespace Prichut.Resort
         public float bottleneckSeconds;
         public float bottleneckUnstaffedSeconds;
 
+        // Akumulacia satisfaction (PRIH-142/143): sucet prispevkov usadenych jednotiek.
+        public float contributionSum;
+        public int contributionCount;
+        public float longestWait;
+
         public NeedRun()
         {
         }

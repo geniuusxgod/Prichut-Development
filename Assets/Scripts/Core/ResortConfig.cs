@@ -30,6 +30,13 @@ namespace Prichut.Resort
         public int bottleneckThreshold = 4;
         public float bottleneckHysteresis = 3f;
 
+        // Satisfaction (PRIH-142): cakanie = prichod -> usadenie, cas obsluhy sa nepocita.
+        public float patienceGrace = 10f;
+        public float patienceFloorAfter = 30f;
+        public float unitFloor = 0.25f;
+        public float waveFloor = 0.40f;
+        public float oceanViewWeight = 1.5f;
+
         // Tabulka vln (Build §4.8). Po poslednej vlne sa opakuje posledna.
         public WaveDefinition[] waves =
         {
