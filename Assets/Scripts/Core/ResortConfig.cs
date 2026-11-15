@@ -37,6 +37,9 @@ namespace Prichut.Resort
         public float waveFloor = 0.40f;
         public float oceanViewWeight = 1.5f;
 
+        // Rating (PRIH-145): 1-5 hviezd a Perfect. Najnizsi vysledok je 1 hviezda.
+        public float[] ratingThresholds = { 0.40f, 0.55f, 0.70f, 0.80f, 0.90f, 1.00f };
+
         // Tabulka vln (Build §4.8). Po poslednej vlne sa opakuje posledna.
         public WaveDefinition[] waves =
         {
