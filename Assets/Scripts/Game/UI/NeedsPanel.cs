@@ -50,6 +50,36 @@ namespace Prichut.Resort.Game
             panel.gameObject.SetActive(visible);
             if (!visible) return;
             EnsureRows();
+            Refresh();
+        }
+
+        // Panel cita filled/demand_total, nie len pocet cakajucich. Cakajuci a obsadene miesta su
+        // samostatne udaje. Sudden rush zvysi total, dokoncena obsluha filled.
+        public static string CountText(NeedRun run)
+        {
+            return run.filled + "/" + run.DemandTotal;
+        }
+
+        public static float Progress(NeedRun run)
+        {
+            return run.DemandTotal > 0 ? Mathf.Clamp01((float)run.filled / run.DemandTotal) : 1f;
+        }
+
+        public static string WaitingText(NeedRun run, int capacity)
+        {
+            return run.Waiting + " waiting  ·  " + run.Seated + "/" + capacity + " seats";
+        }
+
+        private void Refresh()
+        {
+            foreach (Row row in rows)
+            {
+                NeedRun run = Session.Wave.Find(row.need);
+                if (run == null) continue;
+                row.count.text = CountText(run);
+                row.barFill.rectTransform.anchorMax = new Vector2(Progress(run), 1f);
+                row.status.text = WaitingText(run, Session.CapacityOf(run.Building));
+            }
         }
 
         // Riadky sa vytvoria podla needov vlny; novy need sa prida na koniec, ostatne ostanu na mieste.
