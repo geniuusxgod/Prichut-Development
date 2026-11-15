@@ -16,6 +16,7 @@ namespace Prichut.Resort.Game
         private GameState hudState;
 
         public event Action<BuildingId?> SelectionChanged;
+        public event Action<BuildingId> WorkerAllocationRequested;
         public BuildingId? SelectedBuilding { get; private set; }
 
         private void Awake()
@@ -58,6 +59,14 @@ namespace Prichut.Resort.Game
             Island = AddView<IslandView>();
             AddView<ForecastPanel>(GameLayer);
             AddView<StartWaveButton>(GameLayer);
+            AddView<BuildingInfoWindow>(GameLayer);
+        }
+
+        // S3 sa otvara z S1 (priprava) aj z S2 (pocas vlny), jedna obrazovka, dva vstupy.
+        public void RequestWorkerAllocation(BuildingId context)
+        {
+            if (!Session.CanMoveWorker) return;
+            WorkerAllocationRequested?.Invoke(context);
         }
 
         public void Select(BuildingId? building)
