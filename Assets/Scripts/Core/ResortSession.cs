@@ -174,9 +174,10 @@ namespace Prichut.Resort
             return Config.CapacityForLevel(state != null ? state.level : 1);
         }
 
+        // Budova s Workerom bezi naplno (1.0), bez neho spomalene (0.33), nikdy nie na nule (WR2).
         public float SpeedOf(NeedRun run)
         {
-            return ServiceRules.Speed(Config, true);
+            return ServiceRules.Speed(Config, WorkerRoster.IsStaffed(State, run.Building));
         }
 
         // Need nekupenej budovy sa nespawnuje (WR9).
