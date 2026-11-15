@@ -114,6 +114,8 @@ namespace Prichut.Resort
         {
             if (Phase != WavePhase.WaveActive) return;
             SetPhase(WavePhase.WaveResolving);
+            State.result = WaveResultBuilder.Build(State, Config);
+            State.rewardClaimed = false;
             Raise(new ResortEvent(ResortEventType.WaveResolved, value: State.wave.waveNumber));
             SetPhase(WavePhase.WaveComplete);
         }
@@ -155,6 +157,8 @@ namespace Prichut.Resort
         // Interne meranie; cislo sa hracovi ukaze az na S4 (PRIH-144).
         public float CurrentSatisfaction =>
             State.wave == null ? 1f : SatisfactionRules.WaveSatisfaction(State.wave.needs, Config);
+
+        public WaveResult LastResult => State.result;
 
         public bool AllGuestsArrived => State.wave != null && State.wave.arrivalClosed;
 

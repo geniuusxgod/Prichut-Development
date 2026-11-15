@@ -34,6 +34,8 @@ namespace Prichut.Resort
         public WavePhase phaseBeforePause = WavePhase.WaveActive;
         public List<BuildingState> buildings = new List<BuildingState>();
         public WaveRun wave;
+        public WaveResult result;
+        public bool rewardClaimed;
 
         public BuildingState Building(BuildingId id)
         {

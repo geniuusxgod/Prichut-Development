@@ -44,6 +44,9 @@ namespace Prichut.Resort
         public int coinsPerUnit = 16;
         public float[] coinsRatingMultiplier = { 0.4f, 0.6f, 0.8f, 1.0f, 1.2f, 1.3f };
 
+        // Resort Value rastie z obsluzenych jednotiek vlny (status, nikdy sa neminie).
+        public float resortValuePerUnit = 1f;
+
         // Tabulka vln (Build §4.8). Po poslednej vlne sa opakuje posledna.
         public WaveDefinition[] waves =
         {
