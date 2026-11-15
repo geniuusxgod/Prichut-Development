@@ -194,6 +194,15 @@ namespace Prichut.Resort
             return true;
         }
 
+        // S5 Later alebo dokonceny upgrade -> S1 v AWAITING_WAVE. Dalsiu vlnu spusti az Start Wave.
+        public bool FinishUpgradeStep()
+        {
+            if (Phase != WavePhase.Upgrade) return false;
+            State.wave = null;
+            SetPhase(WavePhase.AwaitingWave);
+            return true;
+        }
+
         public int CapacityOf(BuildingId building)
         {
             BuildingState state = State.Building(building);
