@@ -215,6 +215,14 @@ namespace Prichut.Resort
             return ServiceRules.Speed(Config, WorkerRoster.IsStaffed(State, run.Building));
         }
 
+        // Forecast v S1 cita rovnaku konfiguraciu ako generator demandu. Sudden rush v nom nie je.
+        public List<NeedRun> Forecast()
+        {
+            return CreateNeeds(NextWaveNumber);
+        }
+
+        public int ForecastGuests => Config.WaveAt(NextWaveNumber).guests;
+
         // Need nekupenej budovy sa nespawnuje (WR9).
         public List<NeedRun> CreateNeeds(int waveNumber)
         {

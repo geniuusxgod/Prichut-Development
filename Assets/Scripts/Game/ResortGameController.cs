@@ -54,6 +54,7 @@ namespace Prichut.Resort.Game
 
         private void CreateViews()
         {
+            AddView<ForecastPanel>(GameLayer);
             AddView<StartWaveButton>(GameLayer);
         }
 
