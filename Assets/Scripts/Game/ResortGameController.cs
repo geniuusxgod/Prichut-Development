@@ -57,6 +57,7 @@ namespace Prichut.Resort.Game
         private void CreateViews()
         {
             Island = AddView<IslandView>();
+            AddView<GuestCrowdView>();
             AddView<ForecastPanel>(GameLayer);
             AddView<StartWaveButton>(GameLayer);
             AddView<BuildingInfoWindow>(GameLayer);
