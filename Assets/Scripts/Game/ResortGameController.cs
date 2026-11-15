@@ -12,6 +12,7 @@ namespace Prichut.Resort.Game
         public RectTransform GameLayer { get; private set; }
         public RectTransform ModalLayer { get; private set; }
         public IslandView Island { get; private set; }
+        public ToastView Toasts { get; private set; }
 
         private GameState hudState;
 
@@ -62,6 +63,7 @@ namespace Prichut.Resort.Game
             AddView<NeedsPanel>(GameLayer);
             AddView<StartWaveButton>(GameLayer);
             AddView<BuildingInfoWindow>(GameLayer);
+            Toasts = AddView<ToastView>(GameLayer);
         }
 
         // S3 sa otvara z S1 (priprava) aj z S2 (pocas vlny), jedna obrazovka, dva vstupy.
