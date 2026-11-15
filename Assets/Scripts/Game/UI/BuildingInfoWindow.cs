@@ -26,7 +26,10 @@ namespace Prichut.Resort.Game
             details.supportRichText = true;
             UiKit.Place(details.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(20f, -48f), new Vector2(480f, 50f));
 
-            Button close = UiKit.Button(card.transform, "Close", null, "ui_grey", "icon_close", () => Game.Select(null), 18);
+            bool hasCloseIcon = UnityEngine.Resources.Load<UnityEngine.Sprite>("Game/icon_close") != null;
+            Button close = UiKit.Button(card.transform, "Close",
+                        hasCloseIcon ? null : "X", "ui_grey",
+                        hasCloseIcon ? "icon_close" : null, () => Game.Select(null), 18);
             UiKit.Place((RectTransform)close.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-10f, -10f), new Vector2(48f, 44f));
 
             actions = UiKit.Rect("Actions", card.transform);
