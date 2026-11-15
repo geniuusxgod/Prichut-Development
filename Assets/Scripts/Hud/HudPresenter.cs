@@ -29,8 +29,11 @@ public sealed class HudPresenter : MonoBehaviour
     private void Refresh()
     {
         coinsText.text = gameState.Coins.ToString("N0", CultureInfo.InvariantCulture);
-        energyText.text = gameState.Energy.ToString("N0", CultureInfo.InvariantCulture) + "/" +
-                          gameState.EnergyCapacity.ToString("N0", CultureInfo.InvariantCulture);
+        // Prototyp nema Energy cap (Build §4.6), pri kapacite 0 sa zobrazi len hodnota.
+        energyText.text = gameState.EnergyCapacity > 0
+            ? gameState.Energy.ToString("N0", CultureInfo.InvariantCulture) + "/" +
+              gameState.EnergyCapacity.ToString("N0", CultureInfo.InvariantCulture)
+            : gameState.Energy.ToString("N0", CultureInfo.InvariantCulture);
         resortValueText.text = "Resort Value: " + gameState.ResortValue.ToString("N0", CultureInfo.InvariantCulture);
     }
 }
