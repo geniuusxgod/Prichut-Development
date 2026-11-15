@@ -95,6 +95,7 @@ namespace Prichut.Resort
 
             // wave_timer zatvara PRICHOD, nie vlnu. Potom budovy dobiehaju rady (dobeh).
             if (!wave.arrivalClosed && wave.time >= Config.waveTimer) CloseArrival();
+            UpdateStatuses(dt);
             if (IsWaveFinished(wave)) ResolveWave();
         }
 
@@ -115,6 +116,27 @@ namespace Prichut.Resort
             SetPhase(WavePhase.WaveResolving);
             Raise(new ResortEvent(ResortEventType.WaveResolved, value: State.wave.waveNumber));
             SetPhase(WavePhase.WaveComplete);
+        }
+
+        private void UpdateStatuses(float dt)
+        {
+            WaveRun wave = State.wave;
+            foreach (NeedRun run in wave.needs)
+            {
+                NeedStatus before = run.status;
+                bool staffed = WorkerRoster.IsStaffed(State, run.Building);
+                NeedStatus after = BottleneckSystem.Update(run, Config, dt, staffed, wave.arrivalClosed);
+                if (after != before) RaiseStatus(run, after);
+            }
+        }
+
+        private void RaiseStatus(NeedRun run, NeedStatus status)
+        {
+            ResortEventType type = status == NeedStatus.Bottleneck ? ResortEventType.BottleneckStarted
+                : status == NeedStatus.Recovering ? ResortEventType.Recovering
+                : status == NeedStatus.Satisfied ? ResortEventType.NeedSatisfied
+                : ResortEventType.NeedOk;
+            Raise(new ResortEvent(type, run.need, run.Building, run.Waiting));
         }
 
         private void CloseArrival()

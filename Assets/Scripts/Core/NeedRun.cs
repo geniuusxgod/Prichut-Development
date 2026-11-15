@@ -19,6 +19,15 @@ namespace Prichut.Resort
         public List<float> queue = new List<float>();
         public List<float> seats = new List<float>();
 
+        // Stav needu a hysterezia (PRIH-121). bottleneckSeconds sluzi pre odporucanie upgradu.
+        public NeedStatus status = NeedStatus.Ok;
+        public float riseTimer;
+        public int lowWatermark;
+        public float fallTimer;
+        public int highWatermark;
+        public float bottleneckSeconds;
+        public float bottleneckUnstaffedSeconds;
+
         public NeedRun()
         {
         }
