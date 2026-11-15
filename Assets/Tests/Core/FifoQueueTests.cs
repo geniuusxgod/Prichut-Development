@@ -17,5 +17,18 @@ namespace Prichut.Resort.Tests
             Assert.AreEqual(3, run.Waiting);
             Assert.AreEqual(3, run.Seated);
         }
+
+        [Test]
+        public void LongerWaitingUnitIsSeatedFirst()
+        {
+            var run = new NeedRun(NeedId.Drinks, 5);
+            ServiceSystem.Arrive(run, 0f, 1, Config);
+            ServiceSystem.Arrive(run, 1f, 1, Config);
+            ServiceSystem.Arrive(run, 2f, 1, Config);
+            Assert.AreEqual(new[] { 1f, 2f }, run.queue.ToArray());
+            ServiceSystem.Tick(run, 12f, 12f, 1f / 12f, 1, Config);
+            Assert.AreEqual(1, run.filled);
+            Assert.AreEqual(new[] { 2f }, run.queue.ToArray(), "The unit from t=1 must sit down before t=2.");
+        }
     }
 }
