@@ -23,6 +23,7 @@ namespace Prichut.Resort.Game
 
         private Image panel;
         private Text title;
+        private Text footer;
         private RectTransform rowsRoot;
         private readonly List<Row> rows = new List<Row>();
 
@@ -32,6 +33,9 @@ namespace Prichut.Resort.Game
             panel = UiKit.Panel(transform, "NeedsPanel");
             title = UiKit.Label(panel.transform, "Guest Needs", 22, UiKit.Ink, TextAnchor.MiddleLeft);
             UiKit.Place(title.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -8f), new Vector2(280f, 34f));
+
+            footer = UiKit.Label(panel.transform, "", 16, UiKit.Muted, TextAnchor.MiddleLeft, FontStyle.Italic);
+            UiKit.Place(footer.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(18f, 8f), new Vector2(280f, 30f));
 
             rowsRoot = UiKit.Rect("Rows", panel.transform);
             UiKit.Place(rowsRoot, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(10f, -46f), new Vector2(290f, 5 * (RowHeight + 6f)));
@@ -51,6 +55,7 @@ namespace Prichut.Resort.Game
             if (!visible) return;
             EnsureRows();
             Refresh();
+            footer.text = FooterText();
         }
 
         // Panel cita filled/demand_total, nie len pocet cakajucich. Cakajuci a obsadene miesta su
@@ -68,6 +73,15 @@ namespace Prichut.Resort.Game
         public static string WaitingText(NeedRun run, int capacity)
         {
             return run.Waiting + " waiting  ·  " + run.Seated + "/" + capacity + " seats";
+        }
+
+        // Po konci prichodu pokojny stav "All guests arrived", ziadny odpocet, ziadne stopky.
+        // Satisfaction sa pocas vlny ciselne nezobrazuje (PRIH-144).
+        private string FooterText()
+        {
+            if (Session.Phase == WavePhase.WavePaused) return "Paused - nothing moves until you return.";
+            if (Session.Phase == WavePhase.WaveIncoming) return "The boat is docking...";
+            return Session.AllGuestsArrived ? "All guests arrived - finishing up." : "Guests are arriving...";
         }
 
         private void Refresh()
@@ -93,7 +107,7 @@ namespace Prichut.Resort.Game
             foreach (Row row in rows) Destroy(row.background.gameObject);
             rows.Clear();
             foreach (NeedRun need in needs) rows.Add(CreateRow(need.need));
-            NeedVisuals.PlaceLeftPanel(panel.rectTransform, 92f + needs.Count * (RowHeight + 6f));
+            NeedVisuals.PlaceLeftPanel(panel.rectTransform, 86f + needs.Count * (RowHeight + 6f));
         }
 
         private Row CreateRow(NeedId need)
