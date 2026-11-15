@@ -160,6 +160,24 @@ namespace Prichut.Resort
 
         public WaveResult LastResult => State.result;
 
+        public bool CanClaimRewards => Phase == WavePhase.WaveComplete && State.result != null && !State.rewardClaimed;
+
+        // Jedna transakcia vysledku: Coins, Energy a Resort Value sa pripisu prave raz.
+        // Opakovany klik ani znovuotvorenie vysledku odmenu nezopakuje.
+        public bool ClaimRewards()
+        {
+            if (!CanClaimRewards) return false;
+            WaveResult result = State.result;
+            State.coins += result.coins;
+            State.energy += result.energy;
+            State.resortValue += result.resortValueGain;
+            State.rewardClaimed = true;
+            State.completedWaves = Math.Max(State.completedWaves, result.waveNumber);
+            Raise(new ResortEvent(ResortEventType.RewardsClaimed, value: result.coins));
+            SetPhase(WavePhase.Upgrade);
+            return true;
+        }
+
         public bool AllGuestsArrived => State.wave != null && State.wave.arrivalClosed;
 
         public bool CanMoveWorker => WavePhaseRules.CanMoveWorker(Phase);
