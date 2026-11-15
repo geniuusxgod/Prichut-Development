@@ -12,6 +12,8 @@ namespace Prichut.Resort.Game
         private RectTransform canvasRect;
         private Image workerBadge;
         private Text workerLabel;
+        private RectTransform seatsRow;
+        private readonly System.Collections.Generic.List<Image> seats = new System.Collections.Generic.List<Image>();
 
         public RectTransform Root => root;
         public BuildingView Building => building;
@@ -30,6 +32,29 @@ namespace Prichut.Resort.Game
             workerLabel = UiKit.Label(root, "", 15, UiKit.White, TextAnchor.MiddleLeft);
             UiKit.Outline(workerLabel, new Color(0.2f, 0.1f, 0.05f, 0.85f), 1.2f);
             UiKit.Place(workerLabel.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(-6f, -2f), new Vector2(120f, 18f));
+
+            // Hostovske miesta (capacity) su samostatny riadok bodiek, nie su to Workeri.
+            Image seatsBackground = UiKit.Panel(root, "Seats", "ui_dark", 4f);
+            seatsBackground.raycastTarget = false;
+            seatsRow = seatsBackground.rectTransform;
+            UiKit.Place(seatsRow, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(46f, 0f), new Vector2(40f, 26f));
+            var layout = seatsRow.gameObject.AddComponent<HorizontalLayoutGroup>();
+            layout.padding = new RectOffset(6, 6, 4, 4);
+            layout.spacing = 2f;
+            layout.childControlWidth = false;
+            layout.childControlHeight = false;
+            layout.childAlignment = TextAnchor.MiddleLeft;
+        }
+
+        private void RefreshSeats(int capacity, int occupied)
+        {
+            while (seats.Count < capacity) seats.Add(UiKit.Icon(seatsRow, "seat_free", 16f));
+            for (int i = 0; i < seats.Count; i++)
+            {
+                seats[i].gameObject.SetActive(i < capacity);
+                seats[i].sprite = UiKit.Sprite(i < occupied ? "seat_taken" : "seat_free");
+            }
+            seatsRow.sizeDelta = new Vector2(12f + capacity * 18f, 26f);
         }
 
         private void LateUpdate()
@@ -51,6 +76,10 @@ namespace Prichut.Resort.Game
             bool staffed = WorkerRoster.IsStaffed(session.State, building.Id);
             workerBadge.sprite = UiKit.Sprite(staffed ? "worker_badge" : "worker_empty");
             workerLabel.text = staffed ? "" : "No worker";
+
+            NeedRun run = session.Wave != null ? session.Wave.Find(ResortCatalog.NeedOf(building.Id)) : null;
+            bool running = run != null && (WavePhaseRules.IsWaveRunning(session.Phase) || session.Phase == WavePhase.WavePaused);
+            RefreshSeats(session.CapacityOf(building.Id), running ? run.Seated : 0);
         }
     }
 }
