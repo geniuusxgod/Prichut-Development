@@ -30,5 +30,22 @@ namespace Prichut.Resort.Tests
             Assert.AreEqual(1, run.filled);
             Assert.AreEqual(new[] { 2f }, run.queue.ToArray(), "The unit from t=1 must sit down before t=2.");
         }
+
+        [Test]
+        public void LongQueueDrainsWithoutLosingUnits()
+        {
+            var config = ResortConfig.CreateDefault();
+            config.waves = new[] { new WaveDefinition(10, 40, 2, 2, 0, 0) };
+            ResortSession session = TestResort.NewSession(config);
+            // Reception bez Workera: Rooms 40 caka dlhsie nez floor_after
+            Assert.IsTrue(session.MoveWorkerFrom(BuildingId.Reception));
+            session.StartWave();
+            TestResort.RunUntil(session, WavePhase.WaveComplete, 3600f);
+            Assert.AreEqual(WavePhase.WaveComplete, session.Phase);
+            NeedResult rooms = session.LastResult.needs.Find(n => n.need == NeedId.Rooms);
+            Assert.AreEqual(40, rooms.served);
+            Assert.Greater(rooms.longestWait, config.patienceFloorAfter);
+            Assert.AreEqual(session.LastResult.unitsTotal, session.LastResult.unitsServed);
+        }
     }
 }
