@@ -190,6 +190,16 @@ namespace Prichut.Resort
             if (!WorkerRoster.TryMoveFrom(State, source, out BuildingId target)) return false;
             Raise(new ResortEvent(ResortEventType.WorkerMoved, ResortCatalog.NeedOf(target), target,
                 (int)source));
+
+            // AC2: presun na budovu v BOTTLENECK zmeni warning na RECOVERING v tej istej interakcii.
+            // Je to ten isty stavovy mechanizmus (PRIH-20), do OK prejde az ked rad klesne pod prah.
+            NeedRun run = State.wave != null && WavePhaseRules.IsWaveRunning(Phase)
+                ? State.wave.Find(ResortCatalog.NeedOf(target)) : null;
+            if (run != null && run.status == NeedStatus.Bottleneck)
+            {
+                BottleneckSystem.Enter(run, NeedStatus.Recovering, run.Waiting);
+                RaiseStatus(run, NeedStatus.Recovering);
+            }
             Changed?.Invoke();
             return true;
         }
