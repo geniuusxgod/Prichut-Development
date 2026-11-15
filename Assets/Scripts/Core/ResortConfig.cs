@@ -40,6 +40,10 @@ namespace Prichut.Resort
         // Rating (PRIH-145): 1-5 hviezd a Perfect. Najnizsi vysledok je 1 hviezda.
         public float[] ratingThresholds = { 0.40f, 0.55f, 0.70f, 0.80f, 0.90f, 1.00f };
 
+        // Odmena (PRIH-151): Coins = jednotky vlny * coins_per_unit * nasobic ratingu.
+        public int coinsPerUnit = 16;
+        public float[] coinsRatingMultiplier = { 0.4f, 0.6f, 0.8f, 1.0f, 1.2f, 1.3f };
+
         // Tabulka vln (Build §4.8). Po poslednej vlne sa opakuje posledna.
         public WaveDefinition[] waves =
         {
