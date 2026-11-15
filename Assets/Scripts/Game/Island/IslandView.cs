@@ -39,6 +39,9 @@ namespace Prichut.Resort.Game
             if (view == null) view = go.AddComponent<BuildingView>();
             view.Init(Game, id);
             if (go.GetComponent<BuildingHighlight>() == null) go.AddComponent<BuildingHighlight>().Init(view);
+            var workerHolder = new GameObject("WorkerFigure_" + id);
+            workerHolder.transform.SetParent(transform, false);
+            workerHolder.AddComponent<WorkerFigure>().Init(view);
             Buildings[id] = view;
             return view;
         }
