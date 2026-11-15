@@ -85,11 +85,11 @@ namespace Prichut.Resort
                 if (!wave.arrivalClosed)
                 {
                     int arrived = ArrivalSystem.Tick(run, Config, dt);
-                    for (int i = 0; i < arrived; i++) ServiceSystem.Arrive(run, wave.time, capacity);
+                    for (int i = 0; i < arrived; i++) ServiceSystem.Arrive(run, wave.time, capacity, Config);
                     if (arrived > 0) Raise(new ResortEvent(ResortEventType.UnitsArrived, run.need, run.Building, arrived));
                 }
 
-                int served = ServiceSystem.Tick(run, wave.time, dt, SpeedOf(run), capacity);
+                int served = ServiceSystem.Tick(run, wave.time, dt, SpeedOf(run), capacity, Config);
                 if (served > 0) Raise(new ResortEvent(ResortEventType.UnitsServed, run.need, run.Building, served));
             }
 
@@ -147,10 +147,14 @@ namespace Prichut.Resort
             {
                 int flushed = ArrivalSystem.Flush(run);
                 int capacity = CapacityOf(run.Building);
-                for (int i = 0; i < flushed; i++) ServiceSystem.Arrive(run, wave.time, capacity);
+                for (int i = 0; i < flushed; i++) ServiceSystem.Arrive(run, wave.time, capacity, Config);
             }
             Raise(new ResortEvent(ResortEventType.ArrivalClosed, value: wave.waveNumber));
         }
+
+        // Interne meranie; cislo sa hracovi ukaze az na S4 (PRIH-144).
+        public float CurrentSatisfaction =>
+            State.wave == null ? 1f : SatisfactionRules.WaveSatisfaction(State.wave.needs, Config);
 
         public bool AllGuestsArrived => State.wave != null && State.wave.arrivalClosed;
 
