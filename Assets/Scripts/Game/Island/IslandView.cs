@@ -15,11 +15,13 @@ namespace Prichut.Resort.Game
         };
 
         public readonly Dictionary<BuildingId, BuildingView> Buildings = new Dictionary<BuildingId, BuildingView>();
+        private RectTransform overlay;
 
         protected override void Build()
         {
             Camera cam = Camera.main;
             if (cam != null && cam.GetComponent<Physics2DRaycaster>() == null) cam.gameObject.AddComponent<Physics2DRaycaster>();
+            overlay = UiKit.CreateCanvas("IslandOverlay", 80);
 
             foreach (KeyValuePair<BuildingId, string> pair in SceneNames)
             {
@@ -42,6 +44,7 @@ namespace Prichut.Resort.Game
             var workerHolder = new GameObject("WorkerFigure_" + id);
             workerHolder.transform.SetParent(transform, false);
             workerHolder.AddComponent<WorkerFigure>().Init(view);
+            workerHolder.AddComponent<BuildingPlate>().Init(view, overlay);
             Buildings[id] = view;
             return view;
         }
