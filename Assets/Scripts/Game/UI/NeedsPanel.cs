@@ -19,6 +19,7 @@ namespace Prichut.Resort.Game
             public Image barFill;
             public Text status;
             public Image workerBadge;
+            public Image statusIcon;
         }
 
         private Image panel;
@@ -84,6 +85,41 @@ namespace Prichut.Resort.Game
             return Session.AllGuestsArrived ? "All guests arrived - finishing up." : "Guests are arriving...";
         }
 
+        // Warning sa riadi stavom zo spolocnej logiky (BottleneckSystem), nie druhou detekciou v UI.
+        private void ApplyStatus(Row row, NeedRun run)
+        {
+            string building = ResortCatalog.BuildingName(run.Building);
+            string icon = null;
+            string text;
+            Color tint = Color.white;
+            switch (run.status)
+            {
+                case NeedStatus.Bottleneck:
+                    icon = "icon_warning";
+                    text = "<color=#B05A10>" + building + " queue growing</color>";
+                    tint = new Color32(255, 226, 170, 255);
+                    break;
+                case NeedStatus.Recovering:
+                    icon = "icon_recovering";
+                    text = "<color=#2E9650>" + building + " is catching up</color>";
+                    tint = new Color32(220, 245, 220, 255);
+                    break;
+                case NeedStatus.Satisfied:
+                    icon = "icon_satisfied";
+                    text = "<color=#2E9650>All served</color>";
+                    break;
+                default:
+                    text = WaitingText(run, Session.CapacityOf(run.Building));
+                    break;
+            }
+
+            row.statusIcon.gameObject.SetActive(icon != null);
+            if (icon != null) row.statusIcon.sprite = UiKit.Sprite(icon);
+            row.status.rectTransform.anchoredPosition = new Vector2(icon != null ? 84f : 62f, 4f);
+            row.status.text = text;
+            row.background.color = tint;
+        }
+
         private void Refresh()
         {
             foreach (Row row in rows)
@@ -92,7 +128,7 @@ namespace Prichut.Resort.Game
                 if (run == null) continue;
                 row.count.text = CountText(run);
                 row.barFill.rectTransform.anchorMax = new Vector2(Progress(run), 1f);
-                row.status.text = WaitingText(run, Session.CapacityOf(run.Building));
+                ApplyStatus(row, run);
             }
         }
 
@@ -146,6 +182,8 @@ namespace Prichut.Resort.Game
             row.barFill.rectTransform.offsetMin = Vector2.zero;
             row.barFill.rectTransform.offsetMax = Vector2.zero;
 
+            row.statusIcon = UiKit.Icon(row.background.transform, "icon_warning", 18f);
+            UiKit.Place(row.statusIcon.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(62f, 5f), new Vector2(18f, 18f));
             row.status = UiKit.Label(row.background.transform, "", 15, UiKit.Muted, TextAnchor.MiddleLeft, FontStyle.Normal);
             row.status.supportRichText = true;
             UiKit.Place(row.status.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(62f, 4f), new Vector2(214f, 20f));
