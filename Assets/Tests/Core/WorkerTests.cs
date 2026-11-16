@@ -54,5 +54,20 @@ namespace Prichut.Resort.Tests
             Assert.GreaterOrEqual(food.filled, foodFilled);
             Assert.AreEqual(2, WorkerRoster.WorkerCount(session.State), "One slot can never hold two workers.");
         }
+
+        [Test]
+        public void AssignmentIsKeptBetweenWaves()
+        {
+            ResortSession session = TestResort.NewSession();
+            Assert.IsTrue(session.MoveWorkerFrom(BuildingId.BeachBar), "Move before Start Wave is allowed.");
+            session.StartWave();
+            Assert.IsTrue(WorkerRoster.IsStaffed(session.State, BuildingId.Restaurant), "Prepared placement is kept on start.");
+            TestResort.RunUntil(session, WavePhase.WaveComplete);
+            session.ClaimRewards();
+            session.FinishUpgradeStep();
+            Assert.AreEqual(WavePhase.AwaitingWave, session.Phase);
+            Assert.IsTrue(WorkerRoster.IsStaffed(session.State, BuildingId.Restaurant));
+            Assert.IsFalse(WorkerRoster.IsStaffed(session.State, BuildingId.BeachBar), "Next wave starts with the same placement.");
+        }
     }
 }
