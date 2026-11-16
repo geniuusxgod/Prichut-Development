@@ -65,6 +65,7 @@ namespace Prichut.Resort.Game
             AddView<BuildingInfoWindow>(GameLayer);
             Toasts = AddView<ToastView>(GameLayer);
             AddView<WorkerAllocationSheet>(ModalLayer);
+            AddView<WaveCompleteScreen>(ModalLayer);
         }
 
         // S3 sa otvara z S1 (priprava) aj z S2 (pocas vlny), jedna obrazovka, dva vstupy.
