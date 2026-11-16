@@ -67,6 +67,7 @@ namespace Prichut.Resort.Game
             AddView<WorkerAllocationSheet>(ModalLayer);
             AddView<WaveCompleteScreen>(ModalLayer);
             AddView<UpgradeSheet>(ModalLayer);
+            AddView<CoinBurst>(ModalLayer);
         }
 
         // S3 sa otvara z S1 (priprava) aj z S2 (pocas vlny), jedna obrazovka, dva vstupy.
