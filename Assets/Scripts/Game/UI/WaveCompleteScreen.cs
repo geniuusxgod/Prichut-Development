@@ -121,8 +121,10 @@ namespace Prichut.Resort.Game
             return text.ToString().TrimEnd();
         }
 
+        // Claim Rewards vedie na S5 Upgrade/Later, nie priamo na dalsiu vlnu. Opakovany klik nic neprida.
         private void OnClaim()
         {
+            if (Session.ClaimRewards()) SetOpen(false);
         }
     }
 }
