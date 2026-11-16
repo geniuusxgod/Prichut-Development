@@ -86,6 +86,41 @@ namespace Prichut.Resort.Game
             return body;
         }
 
+        // Vsetko cita jednu vysledkovu strukturu (WaveResult), UI nic nevyplaca.
+        protected override void OnSessionChanged()
+        {
+            if (Card == null) return;
+            bool show = Session.Phase == WavePhase.WaveComplete && Session.LastResult != null;
+            if (show && !IsOpen) Fill(Session.LastResult);
+            SetOpen(show);
+        }
+
+        private void Fill(WaveResult result)
+        {
+            title.text = "Wave " + result.waveNumber + " Complete";
+            int count = RatingRules.Stars(result.rating);
+            for (int i = 0; i < stars.Count; i++) stars[i].sprite = UiKit.Sprite(i < count ? "star_full" : "star_empty");
+            bool isPerfect = RatingRules.IsPerfect(result.rating);
+            perfect.gameObject.SetActive(isPerfect);
+            ratingLabel.gameObject.SetActive(!isPerfect);
+            ratingLabel.text = RatingRules.Label(result.rating);
+
+            served.text = "Guests served  <b>" + result.guests + "/" + result.guests + "</b>";
+            satisfaction.text = "Wave Satisfaction  <b>" + Mathf.RoundToInt(result.satisfaction * 100f) + "%</b>";
+            coins.text = "+" + UiKit.Number(result.coins);
+            energy.text = "+" + result.energy;
+            resortValue.text = "+" + UiKit.Number(result.resortValueGain) + "  ->  " + UiKit.Number(result.ResortValueAfter);
+            wentWell.text = Bullets(result.wentWell);
+            improve.text = result.needsImprovement.Count > 0 ? Bullets(result.needsImprovement) : "Nothing - perfect stay!";
+        }
+
+        private static string Bullets(List<string> lines)
+        {
+            var text = new System.Text.StringBuilder();
+            foreach (string line in lines) text.Append("- ").Append(line).Append('\n');
+            return text.ToString().TrimEnd();
+        }
+
         private void OnClaim()
         {
         }
