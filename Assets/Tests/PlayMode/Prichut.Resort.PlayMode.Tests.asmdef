@@ -1,0 +1,6 @@
+{
+    "name": "Prichut.Resort.PlayMode.Tests",
+    "rootNamespace": "Prichut.Resort.Tests",
+    "references": ["Prichut.Resort.Core", "Prichut.Resort.Unity", "UnityEngine.UI"],
+    "optionalUnityReferences": ["TestAssemblies"]
+}
