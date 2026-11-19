@@ -1,0 +1,5 @@
+{
+    "name": "Prichut.Hud.Tests",
+    "references": ["Prichut.Hud", "UnityEngine.UI"],
+    "optionalUnityReferences": ["TestAssemblies"]
+}

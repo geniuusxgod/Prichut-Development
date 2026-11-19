@@ -1,0 +1,193 @@
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace Prichut.Resort.Game
+{
+    // S2 Wave Needs Panel, manazersky dashboard, nie quest list (UI handoff S2).
+    // Bocny panel vedla ostrova: unesie 3, 4 aj 5 needov bez preskupenia layoutu.
+    public sealed class NeedsPanel : GameView
+    {
+        public const float RowHeight = 64f;
+
+        private sealed class Row
+        {
+            public NeedId need;
+            public Image background;
+            public Text name;
+            public Text count;
+            public Image barFill;
+            public Text status;
+            public Image workerBadge;
+            public Image statusIcon;
+        }
+
+        private Image panel;
+        private Text title;
+        private Text footer;
+        private RectTransform rowsRoot;
+        private readonly List<Row> rows = new List<Row>();
+
+        protected override void Build()
+        {
+            UiKit.Stretch((RectTransform)transform);
+            panel = UiKit.Panel(transform, "NeedsPanel");
+            title = UiKit.Label(panel.transform, "Guest Needs", 22, UiKit.Ink, TextAnchor.MiddleLeft);
+            UiKit.Place(title.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -8f), new Vector2(280f, 34f));
+
+            footer = UiKit.Label(panel.transform, "", 16, UiKit.Muted, TextAnchor.MiddleLeft, FontStyle.Italic);
+            UiKit.Place(footer.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(18f, 8f), new Vector2(280f, 30f));
+
+            rowsRoot = UiKit.Rect("Rows", panel.transform);
+            UiKit.Place(rowsRoot, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(10f, -46f), new Vector2(290f, 5 * (RowHeight + 6f)));
+            var layout = rowsRoot.gameObject.AddComponent<VerticalLayoutGroup>();
+            layout.spacing = 6f;
+            layout.childControlHeight = false;
+            layout.childControlWidth = true;
+            layout.childForceExpandHeight = false;
+        }
+
+        protected override void OnSessionChanged()
+        {
+            if (panel == null) return;
+            bool visible = Session.Wave != null &&
+                           (WavePhaseRules.IsWaveRunning(Session.Phase) || Session.Phase == WavePhase.WavePaused);
+            panel.gameObject.SetActive(visible);
+            if (!visible) return;
+            EnsureRows();
+            Refresh();
+            footer.text = FooterText();
+        }
+
+        // Panel cita filled/demand_total, nie len pocet cakajucich. Cakajuci a obsadene miesta su
+        // samostatne udaje. Sudden rush zvysi total, dokoncena obsluha filled.
+        public static string CountText(NeedRun run)
+        {
+            return run.filled + "/" + run.DemandTotal;
+        }
+
+        public static float Progress(NeedRun run)
+        {
+            return run.DemandTotal > 0 ? Mathf.Clamp01((float)run.filled / run.DemandTotal) : 1f;
+        }
+
+        public static string WaitingText(NeedRun run, int capacity)
+        {
+            return run.Waiting + " waiting  ·  " + run.Seated + "/" + capacity + " seats";
+        }
+
+        // Po konci prichodu pokojny stav "All guests arrived", ziadny odpocet, ziadne stopky.
+        // Satisfaction sa pocas vlny ciselne nezobrazuje (PRIH-144).
+        private string FooterText()
+        {
+            if (Session.Phase == WavePhase.WavePaused) return "Paused - nothing moves until you return.";
+            if (Session.Phase == WavePhase.WaveIncoming) return "The boat is docking...";
+            return Session.AllGuestsArrived ? "All guests arrived - finishing up." : "Guests are arriving...";
+        }
+
+        // Warning sa riadi stavom zo spolocnej logiky (BottleneckSystem), nie druhou detekciou v UI.
+        private void ApplyStatus(Row row, NeedRun run)
+        {
+            string building = ResortCatalog.BuildingName(run.Building);
+            string icon = null;
+            string text;
+            Color tint = Color.white;
+            switch (run.status)
+            {
+                case NeedStatus.Bottleneck:
+                    icon = "icon_warning";
+                    text = "<color=#B05A10>" + building + " queue growing</color>";
+                    tint = new Color32(255, 226, 170, 255);
+                    break;
+                case NeedStatus.Recovering:
+                    icon = "icon_recovering";
+                    text = "<color=#2E9650>" + building + " is catching up</color>";
+                    tint = new Color32(220, 245, 220, 255);
+                    break;
+                case NeedStatus.Satisfied:
+                    icon = "icon_satisfied";
+                    text = "<color=#2E9650>All served</color>";
+                    break;
+                default:
+                    text = WaitingText(run, Session.CapacityOf(run.Building));
+                    break;
+            }
+
+            row.statusIcon.gameObject.SetActive(icon != null);
+            if (icon != null) row.statusIcon.sprite = UiKit.Sprite(icon);
+            row.status.rectTransform.anchoredPosition = new Vector2(icon != null ? 84f : 62f, 4f);
+            row.status.text = text;
+            row.background.color = tint;
+        }
+
+        private void Refresh()
+        {
+            foreach (Row row in rows)
+            {
+                NeedRun run = Session.Wave.Find(row.need);
+                if (run == null) continue;
+                row.count.text = CountText(run);
+                row.barFill.rectTransform.anchorMax = new Vector2(Progress(run), 1f);
+                ApplyStatus(row, run);
+            }
+        }
+
+        // Riadky sa vytvoria podla needov vlny; novy need sa prida na koniec, ostatne ostanu na mieste.
+        private void EnsureRows()
+        {
+            List<NeedRun> needs = Session.Wave.needs;
+            bool same = rows.Count == needs.Count;
+            for (int i = 0; same && i < needs.Count; i++) same = rows[i].need == needs[i].need;
+            if (same) return;
+
+            foreach (Row row in rows) Destroy(row.background.gameObject);
+            rows.Clear();
+            foreach (NeedRun need in needs) rows.Add(CreateRow(need.need));
+            NeedVisuals.PlaceLeftPanel(panel.rectTransform, 86f + needs.Count * (RowHeight + 6f));
+        }
+
+        private Row CreateRow(NeedId need)
+        {
+            var row = new Row { need = need };
+            row.background = UiKit.Panel(rowsRoot, "Need_" + need, "ui_panel", 3f);
+            row.background.rectTransform.sizeDelta = new Vector2(290f, RowHeight);
+            BuildingId building = ResortCatalog.BuildingOf(need);
+            var button = row.background.gameObject.AddComponent<Button>();
+            button.onClick.AddListener(() => Game.RequestWorkerAllocation(building));
+
+            // Ocean View je premium need: nizky objem, vyssia vaha, vizualne odliseny zlatym okrajom.
+            if (need == NeedId.OceanView)
+            {
+                var outline = row.background.gameObject.AddComponent<Outline>();
+                outline.effectColor = new Color32(255, 196, 40, 255);
+                outline.effectDistance = new Vector2(3f, -3f);
+            }
+
+            Image icon = UiKit.Icon(row.background.transform, NeedVisuals.Icon(need), 46f);
+            UiKit.Place(icon.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(8f, 0f), new Vector2(46f, 46f));
+
+            row.name = UiKit.Label(row.background.transform, ResortCatalog.NeedName(need), 19, UiKit.Ink);
+            UiKit.Place(row.name.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(62f, -6f), new Vector2(130f, 24f));
+            row.count = UiKit.Label(row.background.transform, "", 21, UiKit.Ink, TextAnchor.MiddleRight);
+            UiKit.Place(row.count.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-12f, -6f), new Vector2(90f, 24f));
+
+            Image bar = UiKit.Fill(row.background.transform, "Bar", new Color32(230, 216, 196, 255));
+            bar.raycastTarget = false;
+            UiKit.Place(bar.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(62f, 26f), new Vector2(214f, 8f));
+            row.barFill = UiKit.Fill(bar.transform, "Fill", new Color32(80, 190, 110, 255));
+            row.barFill.raycastTarget = false;
+            row.barFill.rectTransform.anchorMin = Vector2.zero;
+            row.barFill.rectTransform.anchorMax = new Vector2(0f, 1f);
+            row.barFill.rectTransform.pivot = new Vector2(0f, 0.5f);
+            row.barFill.rectTransform.offsetMin = Vector2.zero;
+            row.barFill.rectTransform.offsetMax = Vector2.zero;
+
+            row.statusIcon = UiKit.Icon(row.background.transform, "icon_warning", 18f);
+            UiKit.Place(row.statusIcon.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(62f, 5f), new Vector2(18f, 18f));
+            row.status = UiKit.Label(row.background.transform, "", 15, UiKit.Muted, TextAnchor.MiddleLeft, FontStyle.Normal);
+            row.status.supportRichText = true;
+            UiKit.Place(row.status.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(62f, 4f), new Vector2(214f, 20f));
+            return row;
+        }
+    }
+}

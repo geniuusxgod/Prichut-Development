@@ -1,0 +1,8 @@
+{
+    "name": "Prichut.Resort.Core.Tests",
+    "rootNamespace": "Prichut.Resort.Tests",
+    "references": ["Prichut.Resort.Core"],
+    "optionalUnityReferences": ["TestAssemblies"],
+    "includePlatforms": ["Editor"],
+    "noEngineReferences": false
+}
