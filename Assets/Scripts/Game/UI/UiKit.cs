@@ -10,13 +10,15 @@ namespace Prichut.Resort.Game
     // nemusela pri kazdej ulohe menit (ziadne merge konflikty v scene).
     public static class UiKit
     {
+        // Pokojna paleta (PRIH-199): tepla hneda z obrysov ostrova, krem, zelena lagunova,
+        // tlmena oranzova pre upozornenia. Ziadne kricave cervene a neonove farby.
         public static readonly Color Ink = new Color32(70, 36, 16, 255);
-        public static readonly Color Cream = new Color32(255, 246, 228, 255);
-        public static readonly Color Muted = new Color32(120, 95, 75, 255);
-        public static readonly Color Positive = new Color32(46, 150, 80, 255);
-        public static readonly Color Warning = new Color32(214, 120, 20, 255);
+        public static readonly Color Cream = new Color32(255, 247, 232, 255);
+        public static readonly Color Muted = new Color32(122, 98, 78, 255);
+        public static readonly Color Positive = new Color32(52, 140, 80, 255);
+        public static readonly Color Warning = new Color32(196, 112, 24, 255);
         public static readonly Color White = Color.white;
-        public static readonly Color Dim = new Color(0.05f, 0.1f, 0.15f, 0.55f);
+        public static readonly Color Dim = new Color(0.04f, 0.12f, 0.16f, 0.5f);
 
         public static readonly Vector2 ReferenceResolution = new Vector2(1280f, 590f);
 

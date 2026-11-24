@@ -22,6 +22,14 @@ namespace Prichut.Resort.Game
             Camera cam = Camera.main;
             if (cam != null && cam.GetComponent<Physics2DRaycaster>() == null) cam.gameObject.AddComponent<Physics2DRaycaster>();
             overlay = UiKit.CreateCanvas("IslandOverlay", 80);
+            if (cam != null)
+            {
+                // CameraFocus prebera velkost zaberu; CameraFitter z PRIH-99 by ju pri zoome prepisoval.
+                // CameraFitter je v Assembly-CSharp (bez asmdef), preto sa hlada podla mena.
+                var fitter = cam.GetComponent("CameraFitter") as Behaviour;
+                if (fitter != null) fitter.enabled = false;
+                cam.gameObject.AddComponent<CameraFocus>().Init(Game);
+            }
 
             foreach (KeyValuePair<BuildingId, string> pair in SceneNames)
             {

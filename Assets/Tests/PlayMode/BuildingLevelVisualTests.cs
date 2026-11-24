@@ -31,9 +31,15 @@ namespace Prichut.Resort.Tests
                 var glow = view.transform.Find("LevelGlow").GetComponent<SpriteRenderer>();
                 Assert.AreEqual(level > 1, glow.enabled);
                 game.Select(view.Id);
-                yield return null;
+                yield return new WaitForSecondsRealtime(0.6f);
+                Assert.Less(Vector3.Distance(expected, view.transform.localScale), 0.001f,
+                    "Selection bounce must settle at the upgraded scale.");
+                float focusedSize = Camera.main.orthographicSize;
                 game.Select(null);
+                yield return new WaitForSecondsRealtime(1f);
                 Assert.Less(Vector3.Distance(expected, view.transform.localScale), 0.001f);
+                Assert.Greater(Camera.main.orthographicSize, focusedSize,
+                    "Deselecting must return the camera towards the full island view.");
             }
 
             game.Session.State.Building(BuildingId.Reception).level = 3;
