@@ -298,6 +298,8 @@ namespace Prichut.Resort
             State.coins -= UnlockCost(area);
             state.owned = true;
             state.level = 1;
+            // Worker prichadza v balíku s budovou a stoji rovno na nej (deficit ostava 1).
+            state.staffed = true;
             State.resortValue += UnlockResortValue(area);
             MarkAreaOffered(area);
             Raise(new ResortEvent(ResortEventType.AreaUnlocked, ResortCatalog.NeedOf(area), area));
