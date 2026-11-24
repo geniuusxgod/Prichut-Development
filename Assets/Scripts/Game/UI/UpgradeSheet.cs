@@ -10,6 +10,8 @@ namespace Prichut.Resort.Game
         private Text heading;
         private Text building;
         private Text reason;
+        private Text effect;
+        private Text price;
         private Button upgrade;
         private Button later;
         private BuildingId? target;
@@ -25,6 +27,13 @@ namespace Prichut.Resort.Game
             UiKit.Place(building.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -44f), new Vector2(620f, 44f));
             reason = UiKit.Label(card, "", 18, UiKit.Muted, TextAnchor.UpperCenter, FontStyle.Normal);
             UiKit.Place(reason.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -92f), new Vector2(600f, 50f));
+
+            effect = UiKit.Label(card, "", 30, UiKit.Ink, TextAnchor.MiddleCenter);
+            effect.supportRichText = true;
+            UiKit.Place(effect.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -150f), new Vector2(620f, 44f));
+            price = UiKit.Label(card, "", 22, UiKit.Ink, TextAnchor.MiddleCenter);
+            price.supportRichText = true;
+            UiKit.Place(price.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -200f), new Vector2(620f, 32f));
 
             upgrade = UiKit.Button(card, "UpgradeNow", "Upgrade Now", "ui_green", null, OnUpgrade, 26);
             UiKit.Place((RectTransform)upgrade.transform, new Vector2(0.5f, 0f), new Vector2(1f, 0f), new Vector2(-10f, 20f), new Vector2(260f, 66f));
@@ -75,6 +84,8 @@ namespace Prichut.Resort.Game
                 building.text = "Your resort is in good shape";
                 reason.text = "No upgrade needed now - place Workers by the forecast.";
                 upgrade.gameObject.SetActive(false);
+                effect.text = "";
+                price.text = "";
                 return;
             }
 
@@ -82,6 +93,21 @@ namespace Prichut.Resort.Game
             building.text = ResortCatalog.BuildingName(id);
             reason.text = fromFlow && result != null && result.needsImprovement.Count > 0 ? result.needsImprovement[0] : "";
             upgrade.gameObject.SetActive(true);
+
+            // Before/after ukazuje len jednu vec, pocet miest, ten isty, ktory hrac vidi na budove.
+            BuildingState state = Session.State.Building(id);
+            int now = Session.CapacityOf(id);
+            if (Session.IsMaxLevel(id))
+            {
+                effect.text = "Seats " + now + "  <size=20>(maximum level)</size>";
+                price.text = "";
+                return;
+            }
+
+            int next = Session.Config.CapacityForLevel(state.level + 1);
+            effect.text = "Seats " + now + "  ->  <color=#2E9650>" + next + "</color>";
+            price.text = "Cost: <b>" + UiKit.Number(Session.UpgradeCost(id)) + " Coins</b>    Resort Value <b>+" +
+                         UiKit.Number(Session.UpgradeResortValue(id)) + "</b>";
         }
 
         private void OnUpgrade()
