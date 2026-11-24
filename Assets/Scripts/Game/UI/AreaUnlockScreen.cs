@@ -88,7 +88,7 @@ namespace Prichut.Resort.Game
 
             AreaState state = Session.AreaStateOf(area);
             int price = Session.UnlockCost(area);
-            cost.text = "";
+            cost.text = "Cost: " + UiKit.Number(price) + " Coins";
             int short_ = price - Session.State.coins;
             if (state == AreaState.Locked)
                 missing.text = "Unlocks after Wave " + Session.GateWave(area);

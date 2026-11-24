@@ -19,6 +19,15 @@ namespace Prichut.Resort.Tests
             var game = Object.FindAnyObjectByType<ResortGameController>();
             var sheet = Object.FindAnyObjectByType<UpgradeSheet>();
             Assert.IsNotNull(sheet);
+            game.Session.State.coins = 100;
+            game.RequestUpgrade(BuildingId.Restaurant);
+            var upgradeButton = sheet.transform.Find("Card/UpgradeNow").GetComponent<Button>();
+            Assert.IsFalse(upgradeButton.interactable);
+            string missingText = string.Join("\n", System.Array.ConvertAll(
+                sheet.GetComponentsInChildren<Text>(), label => label.text));
+            StringAssert.Contains("Missing: 400 Coins", missingText);
+            sheet.transform.Find("Card/Later").GetComponent<Button>().onClick.Invoke();
+            Assert.AreEqual(100, game.Session.State.coins);
             game.Session.State.coins = 2000;
             game.RequestUpgrade(BuildingId.Restaurant);
             Assert.IsTrue(sheet.IsOpen);
@@ -28,6 +37,7 @@ namespace Prichut.Resort.Tests
             StringAssert.Contains("500 Coins", text);
             StringAssert.Contains("+60", text);
             var buy = sheet.transform.Find("Card/UpgradeNow").GetComponent<Button>();
+            Assert.IsTrue(buy.interactable);
             buy.onClick.Invoke();
             Assert.AreEqual(2, game.Session.State.Building(BuildingId.Restaurant).level);
             Assert.AreEqual(1500, game.Session.State.coins);
