@@ -49,8 +49,9 @@ namespace Prichut.Resort.Game
                 image.sprite = UiKit.Sprite(icon);
                 image.color = Color.white;
                 var iconRect = (RectTransform)iconTransform;
-                iconRect.anchoredPosition = new Vector2(-10f, 0f);
-                iconRect.sizeDelta = new Vector2(46f, 46f);
+                // Ikona cela vo vnutri karty, s okrajom od obrysu.
+                iconRect.anchoredPosition = new Vector2(10f, 0f);
+                iconRect.sizeDelta = new Vector2(34f, 34f);
             }
 
             Text value = card.GetComponentInChildren<Text>();
@@ -61,7 +62,7 @@ namespace Prichut.Resort.Game
                 value.fontSize = 24;
                 value.resizeTextMaxSize = 24;
                 value.color = UiKit.Ink;
-                value.rectTransform.offsetMin = new Vector2(44f, 4f);
+                value.rectTransform.offsetMin = new Vector2(52f, 4f);
                 value.rectTransform.offsetMax = new Vector2(-12f, -4f);
             }
         }
