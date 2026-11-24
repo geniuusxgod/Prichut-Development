@@ -34,5 +34,26 @@ namespace Prichut.Resort.Tests
             Assert.AreEqual(value + 150, session.State.resortValue);
             Assert.AreEqual(8, session.Forecast().Find(n => n.need == NeedId.Relax).DemandTotal);
         }
+
+        [Test]
+        public void PoolOfferAppearsAfterWaveThreeAndCanBeBought()
+        {
+            ResortSession session = TestResort.NewSession();
+            session.State.coins = 2000;
+            for (int wave = 1; wave <= 3; wave++)
+            {
+                Assert.IsFalse(session.CanUnlock(BuildingId.Pool), "Locked before Wave 3 is completed.");
+                session.StartWave();
+                TestResort.RunUntil(session, WavePhase.WaveComplete);
+                session.ClaimRewards();
+                if (wave < 3) session.FinishUpgradeStep();
+            }
+
+            Assert.AreEqual(BuildingId.Pool, session.PendingAreaOffer, "S9 follows S5 after Wave 3.");
+            Assert.IsTrue(session.Unlock(BuildingId.Pool));
+            session.FinishUpgradeStep();
+            session.StartWave();
+            Assert.IsNotNull(session.Wave.Find(NeedId.Relax), "Wave 4 brings Relax.");
+        }
     }
 }
