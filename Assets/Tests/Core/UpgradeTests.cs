@@ -99,5 +99,24 @@ namespace Prichut.Resort.Tests
             Assert.AreEqual((int)BuildingId.Restaurant, WaveResultBuilder.Recommend(result, progress, config),
                 "A maxed building is skipped.");
         }
+
+        // Plate (PRIH-140), S3 a S5 citaju capacity len cez Session.CapacityOf, jeden zdroj.
+        [Test]
+        public void CapacityShownEverywhereComesFromOneSource()
+        {
+            ResortSession session = TestResort.NewSession();
+            session.State.coins = 10000;
+            for (int level = 1; level <= 3; level++)
+            {
+                Assert.AreEqual(session.Config.CapacityForLevel(level), session.CapacityOf(BuildingId.Reception));
+                session.Upgrade(BuildingId.Reception);
+            }
+
+            session.StartWave();
+            TestResort.RunUntil(session, WavePhase.WaveActive);
+            TestResort.Run(session, 40f);
+            NeedRun rooms = session.Wave.Find(NeedId.Rooms);
+            Assert.LessOrEqual(rooms.Seated, session.CapacityOf(BuildingId.Reception), "Never more seated than seats.");
+        }
     }
 }

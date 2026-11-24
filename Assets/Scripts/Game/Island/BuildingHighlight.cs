@@ -23,6 +23,12 @@ namespace Prichut.Resort.Game
             if (view != null && view.Game != null) view.Game.SelectionChanged -= OnSelectionChanged;
         }
 
+        // Po zmene levelu sa nova velkost stane zakladom pulzovania.
+        private void RebaseScale()
+        {
+            baseScale = transform.localScale;
+        }
+
         private void OnSelectionChanged(BuildingId? id)
         {
             selected = id.HasValue && id.Value == view.Id;
