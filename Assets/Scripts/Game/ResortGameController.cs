@@ -33,6 +33,7 @@ namespace Prichut.Resort.Game
         {
             GameLayer = UiKit.CreateCanvas("GameCanvas", 90);
             ModalLayer = UiKit.CreateCanvas("ModalCanvas", 120);
+            HudStyler.Apply();
             Session.Changed += SyncHud;
             SyncHud();
             CreateViews();
