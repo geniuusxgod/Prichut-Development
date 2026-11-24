@@ -4,6 +4,20 @@ namespace Prichut.Resort.Tests
 {
     public sealed class UpgradeTests
     {
+        [Test]
+        public void RecommendationUsesSatisfactionWhenThereIsNoBottleneck()
+        {
+            var config = ResortConfig.CreateDefault();
+            var progress = ResortProgress.NewGame(config);
+            var result = new WaveResult();
+            result.needs.Add(new NeedResult { need = NeedId.Food, satisfaction = 0.7f });
+            result.needs.Add(new NeedResult { need = NeedId.Drinks, satisfaction = 0.8f });
+            Assert.AreEqual((int)BuildingId.Restaurant, WaveResultBuilder.Recommend(result, progress, config));
+
+            foreach (NeedResult need in result.needs) need.satisfaction = 1f;
+            Assert.AreEqual(-1, WaveResultBuilder.Recommend(result, progress, config));
+        }
+
         [TestCase(1, 3)]
         [TestCase(2, 5)]
         [TestCase(3, 7)]
@@ -68,6 +82,22 @@ namespace Prichut.Resort.Tests
             Assert.IsTrue(session.Upgrade(BuildingId.BeachBar));
             Assert.IsFalse(session.CanUpgrade(BuildingId.BeachBar), "Maximum level reached.");
             Assert.AreEqual(-1, session.UpgradeCost(BuildingId.BeachBar));
+        }
+
+        [Test]
+        public void RecommendationFollowsTheLongestBottleneck()
+        {
+            var progress = ResortProgress.NewGame(ResortConfig.CreateDefault());
+            var result = new WaveResult();
+            result.needs.Add(new NeedResult { need = NeedId.Food, bottleneckSeconds = 12f, satisfaction = 0.7f });
+            result.needs.Add(new NeedResult { need = NeedId.Drinks, bottleneckSeconds = 30f, satisfaction = 0.8f });
+            result.needs.Add(new NeedResult { need = NeedId.Rooms, bottleneckSeconds = 0f, satisfaction = 1f });
+            var config = ResortConfig.CreateDefault();
+            Assert.AreEqual((int)BuildingId.BeachBar, WaveResultBuilder.Recommend(result, progress, config));
+
+            progress.Building(BuildingId.BeachBar).level = config.MaxLevel;
+            Assert.AreEqual((int)BuildingId.Restaurant, WaveResultBuilder.Recommend(result, progress, config),
+                "A maxed building is skipped.");
         }
     }
 }
