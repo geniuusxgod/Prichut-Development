@@ -18,6 +18,7 @@ namespace Prichut.Resort.Game
 
         public event Action<BuildingId?> SelectionChanged;
         public event Action<BuildingId> WorkerAllocationRequested;
+        public event Action<BuildingId> UpgradeRequested;
         public BuildingId? SelectedBuilding { get; private set; }
 
         private void Awake()
@@ -75,6 +76,19 @@ namespace Prichut.Resort.Game
         {
             if (!Session.CanMoveWorker) return;
             WorkerAllocationRequested?.Invoke(context);
+        }
+
+        // S5 zo S1: upgrade sa ponuka len medzi vlnami (pocas vlny tlacidlo vobec nie je).
+        public void RequestUpgrade(BuildingId building)
+        {
+            if (!WavePhaseRules.CanUpgrade(Session.Phase)) return;
+            UpgradeRequested?.Invoke(building);
+        }
+
+        // Po S5 sa pokracuje na S1 (AWAITING_WAVE).
+        public void ContinueAfterUpgradeStep()
+        {
+            Session.FinishUpgradeStep();
         }
 
         public void Select(BuildingId? building)
