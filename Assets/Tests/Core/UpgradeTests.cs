@@ -37,5 +37,37 @@ namespace Prichut.Resort.Tests
             Assert.AreEqual(7, config.CapacityForLevel(3));
             Assert.AreEqual(7, config.CapacityForLevel(9), "Levels above max clamp to the top capacity.");
         }
+
+        [Test]
+        public void UpgradeIsOnlyAvailableBetweenWaves()
+        {
+            ResortSession session = TestResort.NewSession();
+            session.State.coins = 5000;
+            session.StartWave();
+            TestResort.RunUntil(session, WavePhase.WaveActive);
+            Assert.IsFalse(session.CanUpgrade(BuildingId.Restaurant), "WR6: no upgrade in WAVE_ACTIVE.");
+            Assert.IsFalse(session.Upgrade(BuildingId.Restaurant));
+            TestResort.RunUntil(session, WavePhase.WaveComplete);
+            Assert.IsFalse(session.CanUpgrade(BuildingId.Restaurant), "Result first, then the upgrade step.");
+            session.ClaimRewards();
+            Assert.IsTrue(session.Upgrade(BuildingId.Restaurant));
+            Assert.AreEqual(5, session.CapacityOf(BuildingId.Restaurant));
+        }
+
+        [Test]
+        public void UpgradeCostsCoinsAndRaisesResortValue()
+        {
+            ResortSession session = TestResort.NewSession();
+            session.State.coins = 600;
+            int value = session.State.resortValue;
+            Assert.IsTrue(session.Upgrade(BuildingId.BeachBar));
+            Assert.AreEqual(100, session.State.coins);
+            Assert.AreEqual(value + 60, session.State.resortValue);
+            Assert.IsFalse(session.Upgrade(BuildingId.BeachBar), "Lv3 costs 1,200 - not affordable.");
+            session.State.coins = 2000;
+            Assert.IsTrue(session.Upgrade(BuildingId.BeachBar));
+            Assert.IsFalse(session.CanUpgrade(BuildingId.BeachBar), "Maximum level reached.");
+            Assert.AreEqual(-1, session.UpgradeCost(BuildingId.BeachBar));
+        }
     }
 }
