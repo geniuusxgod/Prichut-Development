@@ -20,7 +20,7 @@ namespace Prichut.Resort.Game
         // aby ostrov ostal viditelny (UI handoff §4).
         public static RectTransform PlaceLeftPanel(RectTransform rt, float height)
         {
-            return UiKit.Place(rt, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(16f, -74f),
+            return UiKit.Place(rt, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(20f, -86f),
                 new Vector2(310f, height));
         }
     }

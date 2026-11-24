@@ -22,13 +22,26 @@ namespace Prichut.Resort.Game
 
         private static readonly Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
         private static Font font;
+        private static Font bodyFont;
 
+        // Fredoka (SIL Open Font License, Art/Resources/Fonts): okruhle pismo, sedi k ostrovu.
+        // SemiBold pre nadpisy, cisla a tlacidla, Medium pre beznu vetu.
         public static Font Font
         {
             get
             {
+                if (font == null) font = Resources.Load<Font>("Fonts/Fredoka-SemiBold");
                 if (font == null) font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 return font;
+            }
+        }
+
+        public static Font BodyFont
+        {
+            get
+            {
+                if (bodyFont == null) bodyFont = Resources.Load<Font>("Fonts/Fredoka-Medium");
+                return bodyFont != null ? bodyFont : Font;
             }
         }
 
@@ -131,12 +144,14 @@ namespace Prichut.Resort.Game
         {
             RectTransform rt = Rect("Label", parent);
             var label = rt.gameObject.AddComponent<Text>();
-            label.font = Font;
+            // Hrubka sa riesi rezom pisma, nie umelym bold/italic z Unity.
+            label.font = style == FontStyle.Bold ? Font : BodyFont;
             label.text = text;
             label.fontSize = size;
             label.color = color;
             label.alignment = anchor;
-            label.fontStyle = style;
+            label.fontStyle = FontStyle.Normal;
+            label.lineSpacing = 1.05f;
             label.raycastTarget = false;
             label.horizontalOverflow = HorizontalWrapMode.Wrap;
             label.verticalOverflow = VerticalWrapMode.Overflow;
@@ -172,7 +187,7 @@ namespace Prichut.Resort.Game
             row.childForceExpandWidth = false;
             row.childForceExpandHeight = false;
 
-            if (!string.IsNullOrEmpty(icon)) Icon(background.transform, icon, fontSize + 8);
+            if (!string.IsNullOrEmpty(icon)) Icon(background.transform, icon, fontSize + 4);
             if (!string.IsNullOrEmpty(text))
             {
                 Text label = Label(background.transform, text, fontSize, pill == "ui_panel" ? Ink : White,
@@ -181,7 +196,8 @@ namespace Prichut.Resort.Game
                 var fitter = label.gameObject.AddComponent<ContentSizeFitter>();
                 fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
                 fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-                if (pill != "ui_panel") Outline(label, new Color(0f, 0f, 0f, 0.35f), 1f);
+                if (pill != "ui_panel") Outline(label, new Color32(70, 36, 16, 200), 1.6f);
+                label.rectTransform.anchoredPosition += new Vector2(0f, 2f);
             }
 
             return button;

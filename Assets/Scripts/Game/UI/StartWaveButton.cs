@@ -17,13 +17,13 @@ namespace Prichut.Resort.Game
 
             button = UiKit.Button(root, "StartWave", "Start Wave", "ui_green", "icon_play", OnTap, 30);
             UiKit.Place((RectTransform)button.transform, new Vector2(1f, 0f), new Vector2(1f, 0f),
-                new Vector2(-24f, 24f), new Vector2(280f, 78f));
+                new Vector2(-24f, 24f), new Vector2(290f, 84f));
 
-            Image pill = UiKit.Panel(root, "Status", "ui_dark");
+            Image pill = UiKit.Panel(root, "Status", "ui_panel", 2.2f);
             pill.raycastTarget = false;
-            UiKit.Place(pill.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -80f),
-                new Vector2(300f, 40f));
-            status = UiKit.Label(pill.transform, "", 20, UiKit.White, TextAnchor.MiddleCenter);
+            UiKit.Place(pill.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f),
+                new Vector2(340f, 50f));
+            status = UiKit.Label(pill.transform, "", 21, UiKit.Ink, TextAnchor.MiddleCenter);
             UiKit.Stretch(status.rectTransform);
         }
 
