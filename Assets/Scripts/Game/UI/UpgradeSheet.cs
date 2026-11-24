@@ -107,6 +107,7 @@ namespace Prichut.Resort.Game
                 effect.text = "Seats " + now + "  <size=20>(maximum level)</size>";
                 price.text = "";
                 missing.text = "";
+                upgrade.gameObject.SetActive(false);
                 return;
             }
 
@@ -117,6 +118,8 @@ namespace Prichut.Resort.Game
             // Nedostatok sa hovori textom, nie len farbou.
             int shortBy = Session.UpgradeCost(id) - Session.State.coins;
             missing.text = shortBy > 0 ? "Missing: " + UiKit.Number(shortBy) + " Coins" : "";
+            upgrade.interactable = Session.CanUpgrade(id);
+            later.GetComponentInChildren<Text>().text = shortBy > 0 ? "Later" : "Not now";
         }
 
         private void OnUpgrade()
