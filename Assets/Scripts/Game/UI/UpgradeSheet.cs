@@ -12,6 +12,7 @@ namespace Prichut.Resort.Game
         private Text reason;
         private Text effect;
         private Text price;
+        private Text missing;
         private Button upgrade;
         private Button later;
         private BuildingId? target;
@@ -34,6 +35,9 @@ namespace Prichut.Resort.Game
             price = UiKit.Label(card, "", 22, UiKit.Ink, TextAnchor.MiddleCenter);
             price.supportRichText = true;
             UiKit.Place(price.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -200f), new Vector2(620f, 32f));
+
+            missing = UiKit.Label(card, "", 19, UiKit.Warning, TextAnchor.MiddleCenter);
+            UiKit.Place(missing.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -232f), new Vector2(620f, 28f));
 
             upgrade = UiKit.Button(card, "UpgradeNow", "Upgrade Now", "ui_green", null, OnUpgrade, 26);
             UiKit.Place((RectTransform)upgrade.transform, new Vector2(0.5f, 0f), new Vector2(1f, 0f), new Vector2(-10f, 20f), new Vector2(260f, 66f));
@@ -86,6 +90,7 @@ namespace Prichut.Resort.Game
                 upgrade.gameObject.SetActive(false);
                 effect.text = "";
                 price.text = "";
+                missing.text = "";
                 return;
             }
 
@@ -101,6 +106,7 @@ namespace Prichut.Resort.Game
             {
                 effect.text = "Seats " + now + "  <size=20>(maximum level)</size>";
                 price.text = "";
+                missing.text = "";
                 return;
             }
 
@@ -108,6 +114,9 @@ namespace Prichut.Resort.Game
             effect.text = "Seats " + now + "  ->  <color=#2E9650>" + next + "</color>";
             price.text = "Cost: <b>" + UiKit.Number(Session.UpgradeCost(id)) + " Coins</b>    Resort Value <b>+" +
                          UiKit.Number(Session.UpgradeResortValue(id)) + "</b>";
+            // Nedostatok sa hovori textom, nie len farbou.
+            int shortBy = Session.UpgradeCost(id) - Session.State.coins;
+            missing.text = shortBy > 0 ? "Missing: " + UiKit.Number(shortBy) + " Coins" : "";
         }
 
         private void OnUpgrade()
