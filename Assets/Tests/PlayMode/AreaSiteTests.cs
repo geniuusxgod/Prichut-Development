@@ -22,6 +22,9 @@ namespace Prichut.Resort.Tests
             game.Session.State.coins = 1500;
             game.RequestAreaUnlock(BuildingId.Pool);
             Assert.IsTrue(screen.IsOpen);
+            string priceText = string.Join("\n", System.Array.ConvertAll(
+                screen.GetComponentsInChildren<Text>(), label => label.text));
+            StringAssert.Contains("Cost: 1,200 Coins", priceText);
             var buy = screen.transform.Find("Card/Unlock").GetComponent<Button>();
             Assert.IsTrue(buy.interactable);
             buy.onClick.Invoke();
