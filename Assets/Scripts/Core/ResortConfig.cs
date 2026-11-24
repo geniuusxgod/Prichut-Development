@@ -17,6 +17,14 @@ namespace Prichut.Resort
         public int[] upgradeCost = { 500, 1200 };
         public int[] upgradeResortValue = { 60, 140 };
 
+        // Unlock (PRIH-39/40): dvojkrokovy, gate (dokoncena vlna) spristupni, Coins kupia.
+        public int poolGateWave = 3;
+        public int poolCost = 1200;
+        public int poolResortValue = 150;
+        public int bungalowsGateWave = 6;
+        public int bungalowsCost = 2500;
+        public int bungalowsResortValue = 300;
+
         // Startovaci stav hraca.
         public int startCoins = 0;
         public int startEnergy = 6;

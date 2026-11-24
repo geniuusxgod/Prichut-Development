@@ -36,6 +36,7 @@ namespace Prichut.Resort
         public WaveRun wave;
         public WaveResult result;
         public bool rewardClaimed;
+        public List<BuildingId> offeredAreas = new List<BuildingId>();
 
         public BuildingState Building(BuildingId id)
         {

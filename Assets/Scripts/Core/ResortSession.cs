@@ -255,6 +255,40 @@ namespace Prichut.Resort
             return true;
         }
 
+        // ---- Oblasti (Pool, Bungalows) ----
+
+        public int GateWave(BuildingId area) =>
+            area == BuildingId.Pool ? Config.poolGateWave : area == BuildingId.Bungalows ? Config.bungalowsGateWave : 0;
+
+        public int UnlockCost(BuildingId area) =>
+            area == BuildingId.Pool ? Config.poolCost : area == BuildingId.Bungalows ? Config.bungalowsCost : 0;
+
+        public int UnlockResortValue(BuildingId area) =>
+            area == BuildingId.Pool ? Config.poolResortValue : area == BuildingId.Bungalows ? Config.bungalowsResortValue : 0;
+
+        // Locked = gate nesplneny; Available = spristupnene, ale nekupene; Unlocked = kupene.
+        public AreaState AreaStateOf(BuildingId area)
+        {
+            if (State.Owns(area)) return AreaState.Unlocked;
+            return State.completedWaves >= GateWave(area) ? AreaState.Available : AreaState.Locked;
+        }
+
+        // Oblast, ktoru este treba ponuknut cez S9 po S5 (kazda len raz automaticky).
+        public BuildingId? PendingAreaOffer
+        {
+            get
+            {
+                foreach (BuildingId area in new[] { BuildingId.Pool, BuildingId.Bungalows })
+                    if (AreaStateOf(area) == AreaState.Available && !State.offeredAreas.Contains(area)) return area;
+                return null;
+            }
+        }
+
+        public void MarkAreaOffered(BuildingId area)
+        {
+            if (!State.offeredAreas.Contains(area)) State.offeredAreas.Add(area);
+        }
+
         public int CapacityOf(BuildingId building)
         {
             BuildingState state = State.Building(building);
