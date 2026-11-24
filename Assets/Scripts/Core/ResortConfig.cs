@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Prichut.Resort
 {
@@ -78,6 +79,37 @@ namespace Prichut.Resort
         }
 
         public int MaxLevel => capacityByLevel.Length;
+
+        public int WaveCount => waves.Length;
+
+        // Kontrola hard pravidiel konfiguracie (spec, nie tuning). Vrati zoznam poruseni.
+        public List<string> Validate()
+        {
+            var errors = new List<string>();
+            if (utilizationEmpty <= 0f) errors.Add("WR2: utilizationEmpty must be > 0");
+            if (!(unitFloor < waveFloor && waveFloor < ratingThresholds[2]))
+                errors.Add("WR1: unitFloor < waveFloor < 3-star threshold");
+            if (waveTimer <= 0f) errors.Add("waveTimer must be > 0");
+            for (int i = 0; i < waves.Length; i++)
+            {
+                foreach (NeedId need in ResortCatalog.AllNeeds)
+                {
+                    int demand = waves[i].Demand(need);
+                    if (demand < 0 || demand > 100) errors.Add("Wave " + (i + 1) + " " + need + ": demand_total out of 0-100");
+                }
+
+                // Pravidlo rastu 3: vo vlne, ktora zavadza novy need, ostatne needy nerastu.
+                if (i == 0) continue;
+                bool debut = false;
+                foreach (NeedId need in ResortCatalog.AllNeeds)
+                    if (waves[i - 1].Demand(need) == 0 && waves[i].Demand(need) > 0) debut = true;
+                if (!debut) continue;
+                foreach (NeedId need in ResortCatalog.AllNeeds)
+                    if (waves[i - 1].Demand(need) > 0 && waves[i].Demand(need) > waves[i - 1].Demand(need))
+                        errors.Add("Wave " + (i + 1) + ": " + need + " grows in a debut wave");
+            }
+            return errors;
+        }
 
         public WaveDefinition WaveAt(int waveNumber)
         {
