@@ -72,8 +72,8 @@ public static class MainSceneBuilder
         }
 
         var slots = new GameObject("BuildingSlots");
-        CreateSlot(slots.transform, "Slot_Pool", new Vector3(-1.6f, -1.2f, 0f));
-        CreateSlot(slots.transform, "Slot_Bungalows", new Vector3(2.3f, -1.2f, 0f));
+        CreateSlot(slots.transform, "Slot_Pool", new Vector3(-2.7f, -1.9f, 0f));
+        CreateSlot(slots.transform, "Slot_Bungalows", new Vector3(4.7f, -2.1f, 0f));
 
         EditorSceneManager.SaveScene(scene, ScenePath);
     }

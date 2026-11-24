@@ -42,8 +42,8 @@ namespace Prichut.Resort.Game
                 Register(pair.Key, go);
             }
 
-            CreateSite(BuildingId.Pool, "Slot_Pool", new Vector3(-1.6f, -1.2f, 0f));
-            CreateSite(BuildingId.Bungalows, "Slot_Bungalows", new Vector3(2.3f, -1.2f, 0f));
+            CreateSite(BuildingId.Pool, "Slot_Pool", new Vector3(-2.7f, -1.9f, 0f));
+            CreateSite(BuildingId.Bungalows, "Slot_Bungalows", new Vector3(4.7f, -2.1f, 0f));
         }
 
         // Staveniska z PRIH-98/MainSceneBuilder; ak v scene chybaju, pouzije sa rovnaka pozicia.
