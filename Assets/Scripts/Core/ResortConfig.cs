@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Prichut.Resort
 {
@@ -51,12 +52,19 @@ namespace Prichut.Resort
         // Resort Value rastie z obsluzenych jednotiek vlny (status, nikdy sa neminie).
         public float resortValuePerUnit = 1f;
 
-        // Tabulka vln (Build §4.8). Po poslednej vlne sa opakuje posledna.
+        // Osem skriptovanych vln prototypu (Build §4.8): hostia, Rooms, Drinks, Food, Relax, Ocean View.
+        // W4 a W7 su debutove vlny (Relax, Ocean View), ostatne needy v nich nerastu.
+        // Po poslednej vlne sa opakuje posledna (volna hra po finale).
         public WaveDefinition[] waves =
         {
             new WaveDefinition(12, 8, 8, 6, 0, 0),
             new WaveDefinition(18, 12, 16, 10, 0, 0),
-            new WaveDefinition(24, 16, 18, 14, 0, 0)
+            new WaveDefinition(24, 16, 18, 14, 0, 0),
+            new WaveDefinition(26, 16, 18, 14, 8, 0),
+            new WaveDefinition(34, 20, 22, 18, 16, 0),
+            new WaveDefinition(40, 25, 28, 22, 20, 0),
+            new WaveDefinition(42, 25, 28, 22, 20, 10),
+            new WaveDefinition(52, 31, 35, 28, 25, 16)
         };
 
         public static ResortConfig CreateDefault()
@@ -71,6 +79,37 @@ namespace Prichut.Resort
         }
 
         public int MaxLevel => capacityByLevel.Length;
+
+        public int WaveCount => waves.Length;
+
+        // Kontrola hard pravidiel konfiguracie (spec, nie tuning). Vrati zoznam poruseni.
+        public List<string> Validate()
+        {
+            var errors = new List<string>();
+            if (utilizationEmpty <= 0f) errors.Add("WR2: utilizationEmpty must be > 0");
+            if (!(unitFloor < waveFloor && waveFloor < ratingThresholds[2]))
+                errors.Add("WR1: unitFloor < waveFloor < 3-star threshold");
+            if (waveTimer <= 0f) errors.Add("waveTimer must be > 0");
+            for (int i = 0; i < waves.Length; i++)
+            {
+                foreach (NeedId need in ResortCatalog.AllNeeds)
+                {
+                    int demand = waves[i].Demand(need);
+                    if (demand < 0 || demand > 100) errors.Add("Wave " + (i + 1) + " " + need + ": demand_total out of 0-100");
+                }
+
+                // Pravidlo rastu 3: vo vlne, ktora zavadza novy need, ostatne needy nerastu.
+                if (i == 0) continue;
+                bool debut = false;
+                foreach (NeedId need in ResortCatalog.AllNeeds)
+                    if (waves[i - 1].Demand(need) == 0 && waves[i].Demand(need) > 0) debut = true;
+                if (!debut) continue;
+                foreach (NeedId need in ResortCatalog.AllNeeds)
+                    if (waves[i - 1].Demand(need) > 0 && waves[i].Demand(need) > waves[i - 1].Demand(need))
+                        errors.Add("Wave " + (i + 1) + ": " + need + " grows in a debut wave");
+            }
+            return errors;
+        }
 
         public WaveDefinition WaveAt(int waveNumber)
         {
