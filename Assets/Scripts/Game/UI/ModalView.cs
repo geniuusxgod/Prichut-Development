@@ -30,8 +30,27 @@ namespace Prichut.Resort.Game
 
         protected void SetOpen(bool open)
         {
+            bool opening = open && !Card.gameObject.activeSelf;
             Backdrop.gameObject.SetActive(open);
             Card.gameObject.SetActive(open);
+            if (opening) popTime = 0f;
+        }
+
+        private float popTime = -1f;
+
+        // Jemne "pop" otvorenie karty: z 92 % na 100 % s malym prekmitom.
+        protected virtual void LateUpdate()
+        {
+            if (popTime < 0f || Card == null) return;
+            popTime += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(popTime / 0.22f);
+            float overshoot = 1f + Mathf.Sin(t * Mathf.PI) * 0.03f;
+            Card.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.92f, 1f, t) * overshoot;
+            if (t >= 1f)
+            {
+                Card.rectTransform.localScale = Vector3.one;
+                popTime = -1f;
+            }
         }
 
         public virtual void Close()

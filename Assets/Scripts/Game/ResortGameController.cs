@@ -35,13 +35,16 @@ namespace Prichut.Resort.Game
             ModalLayer = UiKit.CreateCanvas("ModalCanvas", 120);
             HudStyler.Apply();
             Session.Changed += SyncHud;
+            Session.EventRaised += OnResortEvent;
             SyncHud();
             CreateViews();
         }
 
         private void OnDestroy()
         {
-            if (Session != null) Session.Changed -= SyncHud;
+            if (Session == null) return;
+            Session.Changed -= SyncHud;
+            Session.EventRaised -= OnResortEvent;
         }
 
         private void Update()
@@ -121,6 +124,14 @@ namespace Prichut.Resort.Game
         }
 
         // HUD cita hodnoty z jedneho GameState; zdrojom pravdy je ResortSession.
+        // Po vlne sa kamera vrati na cely ostrov (vysledok patri celemu rezortu).
+        private void OnResortEvent(ResortEvent e)
+        {
+            if (e.type == ResortEventType.PhaseChanged &&
+                (Session.Phase == WavePhase.WaveComplete || Session.Phase == WavePhase.WavePaused))
+                Select(null);
+        }
+
         private void SyncHud()
         {
             if (hudState == null) return;
