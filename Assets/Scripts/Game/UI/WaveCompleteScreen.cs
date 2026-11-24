@@ -97,7 +97,7 @@ namespace Prichut.Resort.Game
 
         private void Fill(WaveResult result)
         {
-            title.text = "Wave " + result.waveNumber + " Complete";
+            title.text = result.isFinale ? "Final wave complete - your resort is thriving!" : "Wave " + result.waveNumber + " Complete";
             int count = RatingRules.Stars(result.rating);
             for (int i = 0; i < stars.Count; i++) stars[i].sprite = UiKit.Sprite(i < count ? "star_full" : "star_empty");
             bool isPerfect = RatingRules.IsPerfect(result.rating);

@@ -36,6 +36,9 @@ namespace Prichut.Resort
         // Odporucany upgrade = budova needu, ktory bol v BOTTLENECK najdlhsie (-1 = ziadny).
         public int recommendedBuilding = -1;
 
+        // Posledna skriptovana vlna prototypu, S4 ju oslavi ako finale. Dalej pokracuje volna hra.
+        public bool isFinale;
+
         public BuildingId? RecommendedBuilding =>
             recommendedBuilding >= 0 ? (BuildingId)recommendedBuilding : (BuildingId?)null;
 
@@ -55,6 +58,7 @@ namespace Prichut.Resort
                 resortValueBefore = progress.resortValue
             };
             result.rating = RatingRules.FromSatisfaction(result.satisfaction, config);
+            result.isFinale = wave.waveNumber == config.WaveCount;
 
             foreach (NeedRun run in wave.needs)
             {

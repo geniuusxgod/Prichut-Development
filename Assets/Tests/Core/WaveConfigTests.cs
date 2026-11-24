@@ -30,5 +30,24 @@ namespace Prichut.Resort.Tests
             config.waves[3].rooms = 30;
             CollectionAssert.IsNotEmpty(config.Validate());
         }
+
+        [Test]
+        public void EightWavesThenFinaleThenFreePlay()
+        {
+            var config = ResortConfig.CreateDefault();
+            ResortSession session = TestResort.NewSession(config);
+            session.State.coins = 100000;
+            for (int wave = 1; wave <= 9; wave++)
+            {
+                Assert.AreEqual(wave, session.NextWaveNumber);
+                Assert.IsTrue(session.StartWave());
+                TestResort.RunUntil(session, WavePhase.WaveComplete, 3600f);
+                Assert.AreEqual(WavePhase.WaveComplete, session.Phase, "Wave " + wave + " must finish.");
+                Assert.AreEqual(wave == 8, session.LastResult.isFinale);
+                session.ClaimRewards();
+                session.FinishUpgradeStep();
+            }
+            Assert.AreSame(config.WaveAt(8), config.WaveAt(9), "Free play repeats the last wave.");
+        }
     }
 }

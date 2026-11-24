@@ -44,7 +44,10 @@ namespace Prichut.Resort.Game
         {
             switch (Session.Phase)
             {
-                case WavePhase.AwaitingWave: return "Ready for Guests  ·  Wave " + Session.NextWaveNumber;
+                case WavePhase.AwaitingWave:
+                    return Session.NextWaveNumber > Session.Config.WaveCount
+                        ? "Ready for Guests  ·  Free play"
+                        : "Ready for Guests  ·  Wave " + Session.NextWaveNumber + " of " + Session.Config.WaveCount;
                 case WavePhase.WaveIncoming: return "Guests are arriving";
                 case WavePhase.WaveActive: return "Wave " + Session.Wave.waveNumber + " in progress";
                 case WavePhase.WavePaused: return "Paused";
