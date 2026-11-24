@@ -234,6 +234,27 @@ namespace Prichut.Resort
             return Config.upgradeResortValue[Math.Min(state.level - 1, Config.upgradeResortValue.Length - 1)];
         }
 
+        // Upgrade prebieha VYHRADNE medzi vlnami (WR6, Build §5.3.7) a stoji Coins.
+        public bool CanUpgrade(BuildingId building)
+        {
+            int cost = UpgradeCost(building);
+            return WavePhaseRules.CanUpgrade(Phase) && cost >= 0 && State.coins >= cost;
+        }
+
+        public bool Upgrade(BuildingId building)
+        {
+            if (!CanUpgrade(building)) return false;
+            int cost = UpgradeCost(building);
+            int gain = UpgradeResortValue(building);
+            BuildingState state = State.Building(building);
+            State.coins -= cost;
+            state.level++;
+            State.resortValue += gain;
+            Raise(new ResortEvent(ResortEventType.BuildingUpgraded, ResortCatalog.NeedOf(building), building, state.level));
+            Changed?.Invoke();
+            return true;
+        }
+
         public int CapacityOf(BuildingId building)
         {
             BuildingState state = State.Building(building);
