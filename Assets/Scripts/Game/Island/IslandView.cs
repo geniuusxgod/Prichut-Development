@@ -33,6 +33,19 @@ namespace Prichut.Resort.Game
                 }
                 Register(pair.Key, go);
             }
+
+            CreateSite(BuildingId.Pool, "Slot_Pool", new Vector3(-1.6f, -1.2f, 0f));
+            CreateSite(BuildingId.Bungalows, "Slot_Bungalows", new Vector3(2.3f, -1.2f, 0f));
+        }
+
+        // Staveniska z PRIH-98/MainSceneBuilder; ak v scene chybaju, pouzije sa rovnaka pozicia.
+        private void CreateSite(BuildingId id, string slotName, Vector3 fallback)
+        {
+            GameObject slot = GameObject.Find(slotName);
+            Vector3 position = slot != null ? slot.transform.position : fallback;
+            var go = new GameObject("Site_" + id);
+            go.transform.SetParent(transform, false);
+            go.AddComponent<AreaSiteView>().Init(Game, id, position, overlay);
         }
 
         public BuildingView Register(BuildingId id, GameObject go)
