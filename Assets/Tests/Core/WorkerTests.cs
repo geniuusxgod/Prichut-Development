@@ -69,5 +69,20 @@ namespace Prichut.Resort.Tests
             Assert.IsTrue(WorkerRoster.IsStaffed(session.State, BuildingId.Restaurant));
             Assert.IsFalse(WorkerRoster.IsStaffed(session.State, BuildingId.BeachBar), "Next wave starts with the same placement.");
         }
+
+        [Test]
+        public void NewBuildingBringsOneWorkerStandingOnIt()
+        {
+            ResortSession session = TestResort.NewSession();
+            session.State.completedWaves = 6;
+            session.State.coins = 10000;
+            Assert.IsTrue(session.Unlock(BuildingId.Pool));
+            Assert.AreEqual(3, WorkerRoster.WorkerCount(session.State));
+            Assert.IsTrue(WorkerRoster.IsStaffed(session.State, BuildingId.Pool));
+            Assert.IsTrue(session.Unlock(BuildingId.Bungalows));
+            Assert.AreEqual(4, WorkerRoster.WorkerCount(session.State));
+            Assert.AreEqual(1, WorkerRoster.EmptyBuildings(session.State).Count, "Deficit stays exactly 1.");
+            Assert.IsFalse(session.Unlock(BuildingId.Pool), "The worker is added exactly once.");
+        }
     }
 }
