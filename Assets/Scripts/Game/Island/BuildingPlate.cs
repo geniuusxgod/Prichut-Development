@@ -75,7 +75,8 @@ namespace Prichut.Resort.Game
             ResortSession session = building.Game.Session;
             bool staffed = WorkerRoster.IsStaffed(session.State, building.Id);
             workerBadge.sprite = UiKit.Sprite(staffed ? "worker_badge" : "worker_empty");
-            workerLabel.text = staffed ? "" : "No worker";
+            BuildingState level = session.State.Building(building.Id);
+            workerLabel.text = (staffed ? "" : "No worker  ") + (level != null && level.level > 1 ? "Lv " + level.level : "");
 
             NeedRun run = session.Wave != null ? session.Wave.Find(ResortCatalog.NeedOf(building.Id)) : null;
             bool running = run != null && (WavePhaseRules.IsWaveRunning(session.Phase) || session.Phase == WavePhase.WavePaused);
