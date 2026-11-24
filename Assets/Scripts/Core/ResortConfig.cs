@@ -12,6 +12,10 @@ namespace Prichut.Resort
         public float utilizationStaffed = 1f;
         public float utilizationEmpty = 0.33f;
 
+        // Upgrade (PRIH-158): cena Lv1->2, Lv2->3 a prirastok Resort Value. Upgrade meni len pocet miest.
+        public int[] upgradeCost = { 500, 1200 };
+        public int[] upgradeResortValue = { 60, 140 };
+
         // Startovaci stav hraca.
         public int startCoins = 0;
         public int startEnergy = 6;

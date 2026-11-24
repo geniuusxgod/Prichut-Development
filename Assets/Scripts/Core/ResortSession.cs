@@ -213,6 +213,27 @@ namespace Prichut.Resort
             return true;
         }
 
+        public bool IsMaxLevel(BuildingId building)
+        {
+            BuildingState state = State.Building(building);
+            return state == null || state.level >= Config.MaxLevel;
+        }
+
+        // Cena dalsieho levelu; -1 ak je budova na maxime alebo nie je kupena.
+        public int UpgradeCost(BuildingId building)
+        {
+            BuildingState state = State.Building(building);
+            if (state == null || !state.owned || IsMaxLevel(building)) return -1;
+            return Config.upgradeCost[Math.Min(state.level - 1, Config.upgradeCost.Length - 1)];
+        }
+
+        public int UpgradeResortValue(BuildingId building)
+        {
+            BuildingState state = State.Building(building);
+            if (state == null) return 0;
+            return Config.upgradeResortValue[Math.Min(state.level - 1, Config.upgradeResortValue.Length - 1)];
+        }
+
         public int CapacityOf(BuildingId building)
         {
             BuildingState state = State.Building(building);
