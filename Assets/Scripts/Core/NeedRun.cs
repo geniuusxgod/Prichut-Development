@@ -1,0 +1,53 @@
+using System;
+using System.Collections.Generic;
+
+namespace Prichut.Resort
+{
+    // Stav jedneho needu v aktivnej vlne (Build §4.4). Hra nesleduje osobny zoznam potrieb hosta -
+    // pocita len jednotky needu. backlog = demand_arrived - filled (zahrna aj jednotky v obsluhe).
+    [Serializable]
+    public sealed class NeedRun
+    {
+        public NeedId need;
+        public int baseTotal;
+        public int regularArrived;
+        public float arrivalAccumulator;
+        public int filled;
+
+        // FIFO rad cakajucich (cas prichodu kazdej jednotky) a oddelene miesta v obsluhe (progres 0..1).
+        // Jednotka z radu nikdy neodide kvoli dlhemu cakaniu.
+        public List<float> queue = new List<float>();
+        public List<float> seats = new List<float>();
+
+        // Stav needu a hysterezia (PRIH-121). bottleneckSeconds sluzi pre odporucanie upgradu.
+        public NeedStatus status = NeedStatus.Ok;
+        public float riseTimer;
+        public int lowWatermark;
+        public float fallTimer;
+        public int highWatermark;
+        public float bottleneckSeconds;
+        public float bottleneckUnstaffedSeconds;
+
+        // Akumulacia satisfaction (PRIH-142/143): sucet prispevkov usadenych jednotiek.
+        public float contributionSum;
+        public int contributionCount;
+        public float longestWait;
+
+        public NeedRun()
+        {
+        }
+
+        public NeedRun(NeedId need, int demandTotal)
+        {
+            this.need = need;
+            baseTotal = Math.Max(0, demandTotal);
+        }
+
+        public BuildingId Building => ResortCatalog.BuildingOf(need);
+        public int DemandTotal => baseTotal;
+        public int DemandArrived => regularArrived;
+        public int Backlog => DemandArrived - filled;
+        public int Waiting => queue.Count;
+        public int Seated => seats.Count;
+    }
+}

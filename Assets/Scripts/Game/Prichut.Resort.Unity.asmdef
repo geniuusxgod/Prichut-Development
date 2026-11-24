@@ -1,0 +1,5 @@
+{
+    "name": "Prichut.Resort.Unity",
+    "rootNamespace": "Prichut.Resort.Game",
+    "references": ["Prichut.Resort.Core", "Prichut.Hud", "UnityEngine.UI"]
+}
