@@ -69,6 +69,7 @@ namespace Prichut.Resort.Game
             AddView<WorkerAllocationSheet>(ModalLayer);
             AddView<WaveCompleteScreen>(ModalLayer);
             AddView<UpgradeSheet>(ModalLayer);
+            AddView<AreaUnlockScreen>(ModalLayer);
             AddView<CoinBurst>(ModalLayer);
         }
 
@@ -99,8 +100,15 @@ namespace Prichut.Resort.Game
         }
 
         // Po S5 sa pokracuje na S1 (AWAITING_WAVE).
+        // S9 sa vklini medzi S5 a navrat na S1, ked je prave splneny gate (Pool po W3, Bungalows po W6).
         public void ContinueAfterUpgradeStep()
         {
+            BuildingId? offer = Session.PendingAreaOffer;
+            if (offer.HasValue && AreaUnlockRequested != null)
+            {
+                AreaUnlockRequested.Invoke(offer.Value, true);
+                return;
+            }
             Session.FinishUpgradeStep();
         }
 
