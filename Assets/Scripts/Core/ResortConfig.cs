@@ -51,12 +51,19 @@ namespace Prichut.Resort
         // Resort Value rastie z obsluzenych jednotiek vlny (status, nikdy sa neminie).
         public float resortValuePerUnit = 1f;
 
-        // Tabulka vln (Build §4.8). Po poslednej vlne sa opakuje posledna.
+        // Osem skriptovanych vln prototypu (Build §4.8): hostia, Rooms, Drinks, Food, Relax, Ocean View.
+        // W4 a W7 su debutove vlny (Relax, Ocean View), ostatne needy v nich nerastu.
+        // Po poslednej vlne sa opakuje posledna (volna hra po finale).
         public WaveDefinition[] waves =
         {
             new WaveDefinition(12, 8, 8, 6, 0, 0),
             new WaveDefinition(18, 12, 16, 10, 0, 0),
-            new WaveDefinition(24, 16, 18, 14, 0, 0)
+            new WaveDefinition(24, 16, 18, 14, 0, 0),
+            new WaveDefinition(26, 16, 18, 14, 8, 0),
+            new WaveDefinition(34, 20, 22, 18, 16, 0),
+            new WaveDefinition(40, 25, 28, 22, 20, 0),
+            new WaveDefinition(42, 25, 28, 22, 20, 10),
+            new WaveDefinition(52, 31, 35, 28, 25, 16)
         };
 
         public static ResortConfig CreateDefault()
