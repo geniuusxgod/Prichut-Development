@@ -284,6 +284,27 @@ namespace Prichut.Resort
             }
         }
 
+        public bool CanUnlock(BuildingId area)
+        {
+            return WavePhaseRules.CanUpgrade(Phase) && AreaStateOf(area) == AreaState.Available &&
+                   State.coins >= UnlockCost(area);
+        }
+
+        // Kupa oblasti: budova sa stane aktivnou, jej need sa od dalsej vlny spawnuje (WR9 uz neblokuje).
+        public bool Unlock(BuildingId area)
+        {
+            if (!CanUnlock(area)) return false;
+            BuildingState state = State.Building(area);
+            State.coins -= UnlockCost(area);
+            state.owned = true;
+            state.level = 1;
+            State.resortValue += UnlockResortValue(area);
+            MarkAreaOffered(area);
+            Raise(new ResortEvent(ResortEventType.AreaUnlocked, ResortCatalog.NeedOf(area), area));
+            Changed?.Invoke();
+            return true;
+        }
+
         public void MarkAreaOffered(BuildingId area)
         {
             if (!State.offeredAreas.Contains(area)) State.offeredAreas.Add(area);
