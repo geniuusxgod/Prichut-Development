@@ -19,6 +19,7 @@ namespace Prichut.Resort.Game
         public event Action<BuildingId?> SelectionChanged;
         public event Action<BuildingId> WorkerAllocationRequested;
         public event Action<BuildingId> UpgradeRequested;
+        public event Action<BuildingId, bool> AreaUnlockRequested;
         public BuildingId? SelectedBuilding { get; private set; }
 
         private void Awake()
@@ -83,6 +84,18 @@ namespace Prichut.Resort.Game
         {
             if (!WavePhaseRules.CanUpgrade(Session.Phase)) return;
             UpgradeRequested?.Invoke(building);
+        }
+
+        // Tuk na dostupne stavenisko v AWAITING_WAVE otvori S9 znova.
+        public void RequestAreaUnlock(BuildingId area)
+        {
+            if (Session.Phase != WavePhase.AwaitingWave) return;
+            if (Session.AreaStateOf(area) == AreaState.Locked)
+            {
+                if (Toasts != null) Toasts.Show(ResortCatalog.BuildingName(area) + " opens after Wave " + Session.GateWave(area), ToastKind.Info);
+                return;
+            }
+            AreaUnlockRequested?.Invoke(area, false);
         }
 
         // Po S5 sa pokracuje na S1 (AWAITING_WAVE).
