@@ -11,6 +11,7 @@ namespace Prichut.Resort.Game
         private Text title;
         private Text details;
         private Button moveButton;
+        private Button upgradeButton;
         private RectTransform actions;
 
         protected override void Build()
@@ -43,6 +44,8 @@ namespace Prichut.Resort.Game
 
             moveButton = UiKit.Button(actions, "MoveWorker", "Move Worker", "ui_blue", null, OnMoveWorker, 20);
             ((RectTransform)moveButton.transform).sizeDelta = new Vector2(190f, 50f);
+            upgradeButton = UiKit.Button(actions, "Upgrade", "Upgrade", "ui_green", null, OnUpgrade, 20);
+            ((RectTransform)upgradeButton.transform).sizeDelta = new Vector2(170f, 50f);
 
             Game.SelectionChanged += _ => OnSessionChanged();
         }
@@ -52,6 +55,11 @@ namespace Prichut.Resort.Game
         private void OnMoveWorker()
         {
             if (Game.SelectedBuilding.HasValue) Game.RequestWorkerAllocation(Game.SelectedBuilding.Value);
+        }
+
+        private void OnUpgrade()
+        {
+            if (Game.SelectedBuilding.HasValue) Game.RequestUpgrade(Game.SelectedBuilding.Value);
         }
 
         protected override void OnSessionChanged()
@@ -77,6 +85,8 @@ namespace Prichut.Resort.Game
             details.text = line;
 
             moveButton.gameObject.SetActive(Session.CanMoveWorker);
+            // Pocas vlny sa upgrade neponuka, tlacidlo nie je ani zasedene, jednoducho tam nie je.
+            upgradeButton.gameObject.SetActive(WavePhaseRules.CanUpgrade(Session.Phase) && !Session.IsMaxLevel(id));
         }
     }
 }

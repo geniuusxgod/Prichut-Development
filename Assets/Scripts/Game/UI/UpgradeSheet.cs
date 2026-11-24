@@ -3,45 +3,104 @@ using UnityEngine.UI;
 
 namespace Prichut.Resort.Game
 {
-    // S5 Upgrade Suggestion, modal nadvazujuci na S4. Later ho preskoci a ide sa na S1.
+    // S5 Upgrade Suggestion (PRIH-38): spolocne okno upgradu. Otvara sa po S4 s odporucanou budovou
+    // a z kontextoveho okna budovy v AWAITING_WAVE. Upgrade meni len pocet miest.
     public sealed class UpgradeSheet : ModalView
     {
         private Text heading;
-        private Text body;
+        private Text building;
+        private Text reason;
+        private Button upgrade;
         private Button later;
+        private BuildingId? target;
+        private bool fromFlow;
 
         protected override void Build()
         {
-            BuildModal(new Vector2(640f, 300f), new Vector2(0.5f, 0.5f), new Vector2(0f, -20f), false);
-            heading = UiKit.Label(Card.transform, "Before the next wave", 28, UiKit.Ink, TextAnchor.UpperCenter);
-            UiKit.Place(heading.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -18f), new Vector2(580f, 40f));
-            body = UiKit.Label(Card.transform, "", 19, UiKit.Muted, TextAnchor.UpperCenter, FontStyle.Normal);
-            body.supportRichText = true;
-            UiKit.Place(body.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -70f), new Vector2(560f, 110f));
+            BuildModal(new Vector2(680f, 380f), new Vector2(0.5f, 0.5f), new Vector2(0f, -20f), false);
+            Transform card = Card.transform;
+            heading = UiKit.Label(card, "Recommended upgrade", 20, UiKit.Muted, TextAnchor.UpperCenter);
+            UiKit.Place(heading.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -16f), new Vector2(620f, 28f));
+            building = UiKit.Label(card, "", 34, UiKit.Ink, TextAnchor.UpperCenter);
+            UiKit.Place(building.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -44f), new Vector2(620f, 44f));
+            reason = UiKit.Label(card, "", 18, UiKit.Muted, TextAnchor.UpperCenter, FontStyle.Normal);
+            UiKit.Place(reason.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -92f), new Vector2(600f, 50f));
 
-            later = UiKit.Button(Card.transform, "Later", "Continue", "ui_grey", null, OnLater, 24);
-            UiKit.Place((RectTransform)later.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 20f), new Vector2(240f, 62f));
+            upgrade = UiKit.Button(card, "UpgradeNow", "Upgrade Now", "ui_green", null, OnUpgrade, 26);
+            UiKit.Place((RectTransform)upgrade.transform, new Vector2(0.5f, 0f), new Vector2(1f, 0f), new Vector2(-10f, 20f), new Vector2(260f, 66f));
+            later = UiKit.Button(card, "Later", "Later", "ui_grey", null, OnLater, 24);
+            UiKit.Place((RectTransform)later.transform, new Vector2(0.5f, 0f), new Vector2(0f, 0f), new Vector2(10f, 20f), new Vector2(200f, 66f));
+
+            Game.UpgradeRequested += OpenFor;
+        }
+
+        protected override void OnDestroy()
+        {
+            if (Game != null) Game.UpgradeRequested -= OpenFor;
+            base.OnDestroy();
+        }
+
+        // Z kontextoveho okna budovy (S1, AWAITING_WAVE).
+        public void OpenFor(BuildingId id)
+        {
+            target = id;
+            fromFlow = false;
+            SetOpen(true);
+            Refresh();
         }
 
         protected override void OnSessionChanged()
         {
             if (Card == null) return;
-            bool show = Session.Phase == WavePhase.Upgrade;
-            if (show && !IsOpen) Fill();
-            SetOpen(show);
+            if (Session.Phase == WavePhase.Upgrade && !IsOpen)
+            {
+                fromFlow = true;
+                target = Session.LastResult != null ? Session.LastResult.RecommendedBuilding : null;
+                SetOpen(true);
+            }
+            else if (IsOpen && !WavePhaseRules.CanUpgrade(Session.Phase))
+            {
+                SetOpen(false);
+            }
+
+            if (IsOpen) Refresh();
         }
 
-        private void Fill()
+        private void Refresh()
         {
+            heading.text = fromFlow ? "Recommended upgrade" : "Upgrade";
             WaveResult result = Session.LastResult;
-            body.text = result != null && result.needsImprovement.Count > 0
-                ? result.needsImprovement[0] + "\n\nPlace your Workers by the forecast before you start."
-                : "Your resort handled the wave well.\n\nCheck the forecast and place your Workers.";
+            if (!target.HasValue)
+            {
+                building.text = "Your resort is in good shape";
+                reason.text = "No upgrade needed now - place Workers by the forecast.";
+                upgrade.gameObject.SetActive(false);
+                return;
+            }
+
+            BuildingId id = target.Value;
+            building.text = ResortCatalog.BuildingName(id);
+            reason.text = fromFlow && result != null && result.needsImprovement.Count > 0 ? result.needsImprovement[0] : "";
+            upgrade.gameObject.SetActive(true);
         }
 
+        private void OnUpgrade()
+        {
+            if (!target.HasValue || !Session.Upgrade(target.Value)) return;
+            if (Game.Toasts != null) Game.Toasts.Show(ResortCatalog.BuildingName(target.Value) + " upgraded!", ToastKind.Positive);
+            Continue();
+        }
+
+        // Later nemeni progres, len zavrie okno a pokracuje na S1 (resp. S9 ak je unlock).
         private void OnLater()
         {
-            Session.FinishUpgradeStep();
+            Continue();
+        }
+
+        private void Continue()
+        {
+            SetOpen(false);
+            if (fromFlow) Game.ContinueAfterUpgradeStep();
         }
     }
 }
