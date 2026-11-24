@@ -33,6 +33,12 @@ namespace Prichut.Resort
         public List<string> wentWell = new List<string>();
         public List<string> needsImprovement = new List<string>();
 
+        // Odporucany upgrade = budova needu, ktory bol v BOTTLENECK najdlhsie (-1 = ziadny).
+        public int recommendedBuilding = -1;
+
+        public BuildingId? RecommendedBuilding =>
+            recommendedBuilding >= 0 ? (BuildingId)recommendedBuilding : (BuildingId?)null;
+
         public int ResortValueAfter => resortValueBefore + resortValueGain;
     }
 
@@ -69,7 +75,37 @@ namespace Prichut.Resort
             result.coins = RewardRules.Coins(result.unitsTotal, result.rating, config);
             result.resortValueGain = ResortValueGain(result.unitsTotal, result.rating, config);
             Explain(result);
+            result.recommendedBuilding = Recommend(result, progress, config);
             return result;
+        }
+
+        // AC6: odporucany upgrade zodpoveda needu, ktory bol v BOTTLENECK najdlhsie. Budova na maxime
+        // sa preskoci. Bez bottlenecku sa odporuci need s najnizsou spokojnostou, ak nie je 100 %.
+        public static int Recommend(WaveResult result, ResortProgress progress, ResortConfig config)
+        {
+            NeedResult best = null;
+            foreach (NeedResult need in result.needs)
+            {
+                if (!CanGrow(need.need, progress, config) || need.bottleneckSeconds <= 0f) continue;
+                if (best == null || need.bottleneckSeconds > best.bottleneckSeconds) best = need;
+            }
+
+            if (best == null)
+            {
+                foreach (NeedResult need in result.needs)
+                {
+                    if (!CanGrow(need.need, progress, config) || need.satisfaction >= 0.999f) continue;
+                    if (best == null || need.satisfaction < best.satisfaction) best = need;
+                }
+            }
+
+            return best == null ? -1 : (int)ResortCatalog.BuildingOf(best.need);
+        }
+
+        private static bool CanGrow(NeedId need, ResortProgress progress, ResortConfig config)
+        {
+            BuildingState state = progress.Building(ResortCatalog.BuildingOf(need));
+            return state != null && state.owned && state.level < config.MaxLevel;
         }
 
         // Resort Value je neubudajuci status; pravidlo prirastku je v konfiguracii.
