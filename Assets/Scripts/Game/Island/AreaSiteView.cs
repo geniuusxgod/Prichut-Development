@@ -78,7 +78,7 @@ namespace Prichut.Resort.Game
             marker.localScale = Vector3.one * pulse;
             markerIcon.sprite = UiKit.Sprite(state == AreaState.Available ? "icon_play" : "icon_lock");
             markerLabel.text = state == AreaState.Available
-                ? ResortCatalog.BuildingName(id) + " - tap to unlock"
+                ? ResortCatalog.BuildingName(id) + ": tap to unlock"
                 : ResortCatalog.BuildingName(id) + " after Wave " + session.GateWave(id);
 
             Camera cam = Camera.main;

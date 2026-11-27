@@ -76,12 +76,12 @@ namespace Prichut.Resort.Game
             title.text = ResortCatalog.BuildingName(id) + "  <size=18>Lv " + state.level + "</size>";
             title.supportRichText = true;
 
-            string worker = staffed ? "<color=#2E9650>Worker on duty - full speed</color>"
-                : "<color=#B05A10>No Worker - running slowly</color>";
-            string line = ResortCatalog.NeedName(ResortCatalog.NeedOf(id)) + "  ·  " + Session.CapacityOf(id) + " seats  ·  " + worker;
+            string worker = staffed ? "<color=#348C50>Worker on duty, full speed</color>"
+                : "<color=#C47018>No Worker, running slowly</color>";
+            string line = ResortCatalog.NeedName(ResortCatalog.NeedOf(id)) + ", " + Session.CapacityOf(id) + " seats\n" + worker;
             NeedRun run = Session.Wave != null ? Session.Wave.Find(ResortCatalog.NeedOf(id)) : null;
             if (run != null && WavePhaseRules.IsWaveRunning(Session.Phase))
-                line += "\nWaiting " + run.Waiting + "  ·  Served " + run.filled + "/" + run.DemandTotal;
+                line += "\nWaiting " + run.Waiting + ", served " + run.filled + " of " + run.DemandTotal;
             details.text = line;
 
             moveButton.gameObject.SetActive(Session.CanMoveWorker);

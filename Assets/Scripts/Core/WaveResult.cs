@@ -131,19 +131,19 @@ namespace Prichut.Resort
                     worst = need;
             }
 
-            if (result.wentWell.Count == 0) result.wentWell.Add("Every guest was served - nobody left mid-wave.");
+            if (result.wentWell.Count == 0) result.wentWell.Add("Every guest was served. Nobody left mid-wave.");
 
             if (worst != null)
             {
                 string building = ResortCatalog.BuildingName(ResortCatalog.BuildingOf(worst.need));
                 bool mostlyEmpty = worst.bottleneckUnstaffedSeconds > worst.bottleneckSeconds * 0.5f;
                 result.needsImprovement.Add(mostlyEmpty
-                    ? building + " had no Worker while its queue grew - move a Worker there (free)."
-                    : building + " is too small for this crowd - more seats would help.");
+                    ? building + " had no Worker while its queue grew. Moving a Worker there is free."
+                    : building + " is too small for this crowd. More seats would help.");
             }
             else if (result.rating != RatingTier.Perfect)
             {
-                result.needsImprovement.Add("A few guests waited a little - place Workers by the forecast.");
+                result.needsImprovement.Add("A few guests waited a little. Place Workers by the forecast.");
             }
         }
     }

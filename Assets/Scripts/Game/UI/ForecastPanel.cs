@@ -37,7 +37,7 @@ namespace Prichut.Resort.Game
             if (!visible) return;
 
             List<NeedRun> forecast = Session.Forecast();
-            title.text = "Next wave  ·  Wave " + Session.NextWaveNumber + "\n<size=17>" +
+            title.text = "Next: Wave " + Session.NextWaveNumber + "\n<size=17>" +
                          Session.ForecastGuests + " guests are on the way</size>";
             title.supportRichText = true;
             NeedVisuals.PlaceLeftPanel(panel.rectTransform, 92f + forecast.Count * 56f);
