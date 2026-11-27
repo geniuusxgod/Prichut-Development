@@ -69,5 +69,21 @@ namespace Prichut.Resort.Tests
             Assert.AreEqual(AreaState.Available, session.AreaStateOf(BuildingId.Pool), "Pool can still be bought later.");
             Assert.IsNotNull(session.Forecast().Find(n => n.need == NeedId.OceanView));
         }
+
+        [Test]
+        public void SkippedAreaCanBeBoughtLaterAndWavesStillWork()
+        {
+            ResortSession session = TestResort.NewSession();
+            session.State.completedWaves = 3;
+            session.MarkAreaOffered(BuildingId.Pool);
+            session.StartWave();
+            Assert.IsNull(session.Wave.Find(NeedId.Relax), "WR9: unbought Pool spawns no Relax.");
+            TestResort.RunUntil(session, WavePhase.WaveComplete);
+            session.ClaimRewards();
+            session.FinishUpgradeStep();
+            session.State.coins = 1200;
+            Assert.IsTrue(session.CanUnlock(BuildingId.Pool), "Later purchase from the site in AWAITING_WAVE.");
+            Assert.IsTrue(session.Unlock(BuildingId.Pool));
+        }
     }
 }
