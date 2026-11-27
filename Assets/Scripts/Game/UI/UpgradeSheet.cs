@@ -86,7 +86,7 @@ namespace Prichut.Resort.Game
             if (!target.HasValue)
             {
                 building.text = "Your resort is in good shape";
-                reason.text = "No upgrade needed now - place Workers by the forecast.";
+                reason.text = "No upgrade needed now. Place Workers by the forecast.";
                 upgrade.gameObject.SetActive(false);
                 effect.text = "";
                 price.text = "";
@@ -112,7 +112,7 @@ namespace Prichut.Resort.Game
             }
 
             int next = Session.Config.CapacityForLevel(state.level + 1);
-            effect.text = "Seats " + now + "  ->  <color=#2E9650>" + next + "</color>";
+            effect.text = "Seats: " + now + " now, <color=#348C50>" + next + " after upgrade</color>";
             price.text = "Cost: <b>" + UiKit.Number(Session.UpgradeCost(id)) + " Coins</b>    Resort Value <b>+" +
                          UiKit.Number(Session.UpgradeResortValue(id)) + "</b>";
             // Nedostatok sa hovori textom, nie len farbou.

@@ -64,8 +64,7 @@ namespace Prichut.Resort.Game
 
             List<BuildingId> empty = WorkerRoster.EmptyBuildings(Session.State);
             string target = empty.Count == 1 ? ResortCatalog.BuildingName(empty[0]) : "-";
-            subtitle.text = "<b>" + target + "</b> has no Worker. Tap the building that gives its Worker - " +
-                            "that one will run slowly instead.";
+            subtitle.text = "<b>" + target + "</b> has no Worker. Tap the building that gives its Worker; that one will run slowly instead.";
 
             foreach (BuildingState state in Session.State.buildings)
                 if (state.owned) cards.Add(CreateCard(state.id));
@@ -116,9 +115,9 @@ namespace Prichut.Resort.Game
             NeedRun run = Session.Wave != null && Session.Phase != WavePhase.AwaitingWave
                 ? Session.Wave.Find(ResortCatalog.NeedOf(id)) : null;
             string line = capacity + " seats";
-            if (run != null) line += "  ·  " + run.Waiting + " waiting";
+            if (run != null) line += ", " + run.Waiting + " waiting";
             if (run != null && run.Waiting > Session.Config.bottleneckThreshold)
-                line += staffed ? "\n<color=#B05A10>Full - needs more seats</color>" : "\n<color=#B05A10>Slow - no Worker</color>";
+                line += staffed ? "\n<color=#C47018>Full, needs more seats</color>" : "\n<color=#C47018>Slow, no Worker</color>";
             else
                 line += staffed ? "\nFull speed" : "\nRunning slowly";
             return line;

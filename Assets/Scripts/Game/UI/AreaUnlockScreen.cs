@@ -102,7 +102,7 @@ namespace Prichut.Resort.Game
             if (!Session.Unlock(area)) return;
             Close();
             if (fromFlow) Session.FinishUpgradeStep();
-            if (Game.Toasts != null) Game.Toasts.Show(ResortCatalog.BuildingName(area) + " is open - a new Worker joined!", ToastKind.Positive);
+            if (Game.Toasts != null) Game.Toasts.Show(ResortCatalog.BuildingName(area) + " is open and a new Worker joined!", ToastKind.Positive);
         }
 
         private void OnLater()

@@ -73,16 +73,16 @@ namespace Prichut.Resort.Game
 
         public static string WaitingText(NeedRun run, int capacity)
         {
-            return run.Waiting + " waiting  ·  " + run.Seated + "/" + capacity + " seats";
+            return run.Waiting + " waiting, " + run.Seated + " of " + capacity + " seats busy";
         }
 
         // Po konci prichodu pokojny stav "All guests arrived", ziadny odpocet, ziadne stopky.
         // Satisfaction sa pocas vlny ciselne nezobrazuje (PRIH-144).
         private string FooterText()
         {
-            if (Session.Phase == WavePhase.WavePaused) return "Paused - nothing moves until you return.";
+            if (Session.Phase == WavePhase.WavePaused) return "Paused. Nothing moves until you return.";
             if (Session.Phase == WavePhase.WaveIncoming) return "The boat is docking...";
-            return Session.AllGuestsArrived ? "All guests arrived - finishing up." : "Guests are arriving...";
+            return Session.AllGuestsArrived ? "All guests arrived. Finishing up." : "Guests are arriving...";
         }
 
         // Warning sa riadi stavom zo spolocnej logiky (BottleneckSystem), nie druhou detekciou v UI.
@@ -96,17 +96,17 @@ namespace Prichut.Resort.Game
             {
                 case NeedStatus.Bottleneck:
                     icon = "icon_warning";
-                    text = "<color=#B05A10>" + building + " queue growing</color>";
+                    text = "<color=#C47018>" + building + " queue growing</color>";
                     tint = new Color32(255, 226, 170, 255);
                     break;
                 case NeedStatus.Recovering:
                     icon = "icon_recovering";
-                    text = "<color=#2E9650>" + building + " is catching up</color>";
+                    text = "<color=#348C50>" + building + " is catching up</color>";
                     tint = new Color32(220, 245, 220, 255);
                     break;
                 case NeedStatus.Satisfied:
                     icon = "icon_satisfied";
-                    text = "<color=#2E9650>All served</color>";
+                    text = "<color=#348C50>All served</color>";
                     break;
                 default:
                     text = WaitingText(run, Session.CapacityOf(run.Building));
