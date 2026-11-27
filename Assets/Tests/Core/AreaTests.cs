@@ -55,5 +55,19 @@ namespace Prichut.Resort.Tests
             session.StartWave();
             Assert.IsNotNull(session.Wave.Find(NeedId.Relax), "Wave 4 brings Relax.");
         }
+
+        [Test]
+        public void BungalowsUseTheSameFlowASecondTime()
+        {
+            ResortSession session = TestResort.NewSession();
+            session.State.completedWaves = 6;
+            session.State.coins = 10000;
+            session.MarkAreaOffered(BuildingId.Pool);
+            Assert.AreEqual(BuildingId.Bungalows, session.PendingAreaOffer);
+            Assert.IsTrue(session.Unlock(BuildingId.Bungalows));
+            Assert.AreEqual(AreaState.Unlocked, session.AreaStateOf(BuildingId.Bungalows));
+            Assert.AreEqual(AreaState.Available, session.AreaStateOf(BuildingId.Pool), "Pool can still be bought later.");
+            Assert.IsNotNull(session.Forecast().Find(n => n.need == NeedId.OceanView));
+        }
     }
 }
