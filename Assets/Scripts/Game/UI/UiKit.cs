@@ -182,8 +182,9 @@ namespace Prichut.Resort.Game
 
             var row = background.gameObject.AddComponent<HorizontalLayoutGroup>();
             row.childAlignment = TextAnchor.MiddleCenter;
-            row.spacing = 8f;
-            row.padding = new RectOffset(16, 16, 4, 4);
+            row.spacing = 12f;
+            // Spodny okraj je vacsi kvoli tmavej "policke" tlacidla, text tak sedi v strede plochy.
+            row.padding = new RectOffset(18, 18, 2, 8);
             row.childControlWidth = false;
             row.childControlHeight = false;
             row.childForceExpandWidth = false;
@@ -199,7 +200,6 @@ namespace Prichut.Resort.Game
                 fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
                 fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
                 if (pill != "ui_panel") Outline(label, new Color32(70, 36, 16, 200), 1.6f);
-                label.rectTransform.anchoredPosition += new Vector2(0f, 2f);
             }
 
             return button;
