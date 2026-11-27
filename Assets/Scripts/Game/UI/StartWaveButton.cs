@@ -15,9 +15,15 @@ namespace Prichut.Resort.Game
             var root = (RectTransform)transform;
             UiKit.Stretch(root);
 
-            button = UiKit.Button(root, "StartWave", "Start Wave", "ui_green", "icon_play", OnTap, 30);
-            UiKit.Place((RectTransform)button.transform, new Vector2(1f, 0f), new Vector2(1f, 0f),
-                new Vector2(-24f, 24f), new Vector2(290f, 84f));
+            // Hlavne CTA je okruhle tlacidlo s vlnou: jeden jasny symbol v dosahu palca, bez textu.
+            Image wave = UiKit.Icon(root, "btn_wave", 124f);
+            wave.name = "StartWave";
+            wave.raycastTarget = true;
+            button = wave.gameObject.AddComponent<Button>();
+            button.targetGraphic = wave;
+            button.onClick.AddListener(OnTap);
+            UiKit.Place(wave.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f),
+                new Vector2(-28f, 24f), new Vector2(124f, 124f));
 
             Image pill = UiKit.Panel(root, "Status", "ui_panel", 2.2f);
             pill.raycastTarget = false;
@@ -25,6 +31,14 @@ namespace Prichut.Resort.Game
                 new Vector2(340f, 50f));
             status = UiKit.Label(pill.transform, "", 21, UiKit.Ink, TextAnchor.MiddleCenter);
             UiKit.Stretch(status.rectTransform);
+        }
+
+        // Jemne "dychanie" tlacidla, aby bolo jasne, co je hlavna akcia.
+        private void Update()
+        {
+            if (button == null || !button.gameObject.activeSelf) return;
+            float pulse = 1f + 0.04f * Mathf.Sin(Time.unscaledTime * 3f);
+            button.transform.localScale = Vector3.one * pulse;
         }
 
         private void OnTap()
